@@ -7,3 +7,24 @@ h1 {
   font-size: 1.1em;
   text-align: right;
 }
+
+div.game {
+  border: 1px solid #aaa;
+  padding: 3px;
+  border-radius: 5px;
+  display: block;
+  width: 300px;
+}
+
+div.game div.col-left {
+  float: left;
+  width: 220px;
+}
+
+div.game div span.number {
+  font-weight: bold;
+}
+div.game div span.cost {
+  font-size: smaller;
+  color: #aaa;
+}

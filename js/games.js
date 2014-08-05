@@ -35,18 +35,24 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
     /* If the game is not displayed and enough resources : let's reveal it to the player ! */
     if (!this.displayed && this.getCost() * metaGame.pctToReveal < resourcePool.resources[this.resource].value) {
       this.displayed = true;
-      $('<div id="game-'+this.code+'" code="'+this.code+'">'
+      $('<div id="game-'+this.code+'" code="'+this.code+'" class="game">'
+        + '<div class="col-left">'
         + '<span class="name">'+this.name+'</span> '
-        + 'v<span class="number">'+this.number+'</span>'
-        + ' Players : <span class="players">'+this.players+'</span> / <span class="max-players">'+this.maxPlayers+'</span> '
+        + ' - <span class="number">v'+this.number+'</span>'
+        + '<br/>'
+        + 'Players : <span class="players">'+this.players+'</span> / <span class="max-players">'+this.maxPlayers+'</span>'
+        + '</div>'
+        + '<div class="col-right">'
         + '<button class="dev">dev</button>'
-        + ' (<span class="cost">'+this.getCost()+'</span> '+this.resource+')'
+        + '<br/>'
+        + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
+        + '</div>'
         + '</div>').appendTo("#thingsToClick");
-      $('#game-'+this.code+' button.dev')
+      $('#game-'+this.code+' div.col-right button.dev')
         .button({ disabled: !this.enabled })
         .click(function() {
           $(this).button("disable");
-          var game = games.list[$(this).parent().attr('code')];
+          var game = games.list[$(this).parent().parent().attr('code')];
           game.develop();
           game.toggle();
         });
@@ -62,7 +68,7 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
   /* Utility function to enable or disable the dev button of the game */
   this.toggle = function() {
     this.enabled = !this.enabled;
-    $('#game-'+this.code+' button.dev').button("option", "disabled", !this.enabled);
+    $('#game-'+this.code+' div button.dev').button("option", "disabled", !this.enabled);
   }
   /* Utility function to get the price of the game */
   this.getCost = function() {
@@ -74,8 +80,8 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
     var value = resourcePool.resources[this.resource].value;
     this.number += 1;
     resourcePool.resources[this.resource].value = value - amount;
-    $("#game-"+this.code+' span.number').html(this.number);
-    $("#game-"+this.code+' span.cost').html(Math.round(this.getCost() * 1000) / 1000);
+    $("#game-"+this.code+' div span.number').html('v'+this.number);
+    $("#game-"+this.code+' div span.cost span.value').html(Math.round(this.getCost() * 1000) / 1000);
   }
 
   /* Where the game produce some clicks ! */
@@ -88,19 +94,16 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
   /* Where some players might stumble upon the game, and, lo!, play it (clicks $_$) */
   this.hasNewPlayers = function() {
     /* Does something happen ? */
-    if (this.number > 0 && Math.random() < games.playerEventProba) {
-      console.log('Player event');
+    if (this.number > 0 && Math.random() < games.playerEventProba * (this.maxPlayers - this.players) / this.maxPlayers) {
       /* Yes ! */
       var event = Math.random();
       if (event < games.playerLeavingProba * this.players / this.maxPlayers) {
-        console.log('Leaving player');
         /* Argl ! Player is fed up with our game !! */
         if (this.players > 0) {
           this.players -= 1;
         }
       }
       if ((1 - event) < (1 - games.playerJoinProba) * (this.maxPlayers - this.players) / this.maxPlayers) {
-        console.log('New player !')
         /* Yes ! New player */
         if (this.players < this.maxPlayers) {
           this.players += 1;
