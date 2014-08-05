@@ -1,13 +1,13 @@
 function Clicker(resource) {
   this.resource = resource;
   this.click = function() {
-    resourcePool.resources[this.resource].value += 1;
+    resourcePool.resources[this.resource].add(1);
   };
   // initialisation du bouton
   $(this.elt).button().click(function() {
     var res = $(this).attr('resource');
 
-    resourcePool.resources[res].value += 1;
+    resourcePool.resources[res].add(1);
   });
 };
 

@@ -3,6 +3,8 @@ function Resource(name) {
   this.name = name;
   /* Initial value of the resource */
   this.value = 0;
+  /* Total accumulated value */
+  this.accValue = 0;
   /* Is the resource visible ? */
   this.displayed = false;
   /* Nice function, really */
@@ -18,6 +20,15 @@ function Resource(name) {
     }
     /* Update of the value of the resource */
     $("#"+this.name+" span.value").html(Math.round(this.value * 1000) / 1000);
+  };
+  /* Add some resource to the pool */
+  this.add = function(amount) {
+    this.value += amount;
+    this.accValue += amount;
+  }
+  /* Consume some of the resource */
+  this.consume = function(amount) {
+    this.value -= amount;
   }
 }
 
