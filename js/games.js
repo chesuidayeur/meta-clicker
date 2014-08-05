@@ -32,7 +32,7 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
   }
   /* Asking the game to display itself */
   this.render = function() {
-    /* If the game is not displayed and the enough resources : let's reveal it to the player ! */
+    /* If the game is not displayed and enough resources : let's reveal it to the player ! */
     if (!this.displayed && this.getCost() * metaGame.pctToReveal < resourcePool.resources[this.resource].value) {
       this.displayed = true;
       $('<div id="game-'+this.code+'" code="'+this.code+'">'
