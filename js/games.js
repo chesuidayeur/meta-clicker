@@ -106,6 +106,7 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
           this.players += 1;
         }
       }
+      /* Update of the display */
       $("#game-"+this.code+" span.players").html(this.players);
     }
   }
@@ -113,13 +114,20 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
 
 /* Wrapper for all the games */
 var games = {
+  /* Base probability of something happening to a player */
   playerEventProba : 0.02,
+  /* Base probability of a user leaving the game */
   playerLeavingProba : 0.3,
+  /* Base probability of a user joining the game */
   playerJoinProba : 0.3,
+
+  /* List of all the games */
   list : {},
+  /* Where all the game are intialized */
   init : function() {
     this.list['protoIncGame'] = new Game('protoIncGame', 'Proto Incremental Game', 10, 'gamelore', 1.1, 10, 0.001);
   },
+  /* Where we ask all our games if they might produce something clic-related */
   production : function() {
     for (var g in this.list) {
       var game = this.list[g];
