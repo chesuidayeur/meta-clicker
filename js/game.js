@@ -1,5 +1,6 @@
 var metaGame = {
-  pctToReveal : 0.1
+  pctToReveal : 0.1,
+  maxPlayerRatio: 1.3,
 };
 
 var Timer = {

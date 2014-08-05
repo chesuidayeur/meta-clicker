@@ -19,6 +19,8 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
   /* Intrisics of the game */
   /* How many times the game has been bought */
   this.number = 0;
+  /* Base maximum of Players */
+  this.baseMaxPlayers = maxPlayers;
   /* Maximum number of players */
   this.maxPlayers = maxPlayers;
   /* Number of players */
@@ -79,8 +81,10 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
     var amount = this.getCost();
     var value = resourcePool.resources[this.resource].value;
     this.number += 1;
+    this.maxPlayers = Math.round(this.baseMaxPlayers * Math.pow(metaGame.maxPlayerRatio, this.number));
     resourcePool.resources[this.resource].value = value - amount;
     $("#game-"+this.code+' div span.number').html('v'+this.number);
+    $("#game-"+this.code+' div span.max-players').html(this.maxPlayers);
     $("#game-"+this.code+' div span.cost span.value').html(Math.round(this.getCost() * 1000) / 1000);
   }
 
