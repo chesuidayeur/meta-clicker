@@ -49,7 +49,7 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
         + '<br/>'
         + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
         + '</div>'
-        + '</div>').appendTo("#thingsToClick");
+        + '</div>').appendTo("#games-container");
       $('#game-'+this.code+' div.col-right button.dev')
         .button({ disabled: !this.enabled })
         .click(function() {
