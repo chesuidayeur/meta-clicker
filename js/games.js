@@ -82,7 +82,7 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
     var res = resourcePool.resources[this.resource];
     var value = res.value;
     this.number += 1;
-    this.maxPlayers = Math.round(this.baseMaxPlayers * Math.pow(metaGame.maxPlayerRatio, this.number));
+    this.maxPlayers = Math.round(this.baseMaxPlayers * Math.pow(metaGame.maxPlayerRatio, (this.number - 1)));
     res.consume(amount);
     $("#game-"+this.code+' div span.number').html('v'+this.number);
     $("#game-"+this.code+' div span.max-players').html(this.maxPlayers);
