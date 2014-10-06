@@ -74,7 +74,7 @@ function Game(code, name, cost, resource, ratio, maxPlayers, baseClicksPerPlayer
   };
   /* Utility function to get the price of the game */
   this.getCost = function() {
-    return this.cost * Math.pow(this.ratio, this.number);
+    return Math.round(this.cost * Math.pow(this.ratio, this.number) * 1000) / 1000;
   };
   /* Business ! How to develop a game */
   this.develop = function() {

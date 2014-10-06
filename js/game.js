@@ -4,7 +4,7 @@ var metaGame = {
 };
 
 var Timer = {
-  delay : 100,
+  delay : 250,
   pid : null,
 
   update : function () {
