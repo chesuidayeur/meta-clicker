@@ -76,7 +76,7 @@ chaque tick :
 /* Si les joueurs ont passé suffisamment de temps */
 si test attrait : temps passé - attrait x Nj > 0
   Nombre de joueurs qui partent :
-    rand(difficulté, 1) x (temps passé / (temps moy x Nj)
+    partie entiere (rand(difficulté, 1) x (temps passé / (temps moy x Nj))
 
   temps passé -= nombre de joueurs ayant quitté le jeu x temps moy
   
@@ -87,7 +87,7 @@ si test attrait : temps passé - attrait x Nj > 0
 si test noob -> temps passé - (temps moy x Nj) > 0 et niveau confirmé ouvert
   Nombre de joueur passant de niveau :
     /* Un peu moins que le nombre de joueurs ayant joué suffisamment longtemps */
-    rand(difficulté, 1) x (temps passé / (temps moy x Nj)
+    partie entière (rand(difficulté, 1) x (temps passé / (temps moy x Nj))
 
   temps passé -= nombre de joueurs ayant passé de niveau x temps moy
   

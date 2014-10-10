@@ -37,7 +37,7 @@ var resourcePool = {
   /* All the resources, ALL, nicely stacked */
   resources : {},
   /* Where resources are created, a quasi mystical place */
-  init : function() {
+  init : function() {
     this.resources['clic'] = new Resource('clic');
     this.resources['gamelore'] = new Resource('gamelore');
   }

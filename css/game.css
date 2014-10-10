@@ -1,6 +1,7 @@
 html, body {
   font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
   font-size: 0.9em;
+  cursor: default;
 }
 
 h1 {

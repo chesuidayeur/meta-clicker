@@ -4,10 +4,19 @@ var metaGame = {
 };
 
 var Timer = {
-  delay : 250,
+  delay : 250, /* Tick duration in ms */
   pid : null,
+  day : 10, /* Number of ticks */
+
+  dayCounter : 0,
 
   update : function () {
+    Timer.dayCounter += 1
+    if (Timer.dayCounter == Timer.day) {
+      console.log("A new day has passed !");
+      games.update();
+      Timer.dayCounter = 0;
+    }
     games.production();
     UI.update();
     UI.render();
