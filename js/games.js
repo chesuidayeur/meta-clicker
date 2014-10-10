@@ -19,6 +19,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
   /* Attraction related */
   this.baseAttraction = baseAttraction;
   this.attraction = baseAttraction;
+  this.maxAttraction = baseAttraction;
 
   /* Intrisics of the game */
   /* How many times the game has been upgraded */
@@ -104,6 +105,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
   }
 
   this.whateverHappensToMyGame = function() {
+    this.maxAttraction = Math.max(this.getAttraction, this.maxAttraction);
     if (this.upgrades > 0) {
       this.whateverHappensToMyPlayers();
     }

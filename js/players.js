@@ -115,7 +115,7 @@ function Players(game, conf) {
       if (type != 'nolife' &&
           player.number > 0 &&
           player.playedTime > player.avgTime * player.number &&
-          gameAttraction > player.attractionToUnlock) {
+          this.game.maxAttraction > player.attractionToUnlock) {
         /* Number of players leveling up */
         lvlups = Math.min(
           player.number,
