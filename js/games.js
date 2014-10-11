@@ -50,17 +50,23 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
     if (!this.displayed && this.getCost() * metaGame.pctToReveal < resourcePool.resources[this.resource].value) {
       this.displayed = true;
       $('<div id="game-'+this.code+'" code="'+this.code+'" class="game">'
-        + '<div class="col-left">'
-        + '<span class="name">'+this.name+'</span> '
-        + ' - <span class="upgrades">v'+this.upgrades+'</span>'
-        + '</div>'
-        + '<div class="players col-left" id="players-'+this.code+'">'
-        +   this.players.toHTML()
-        + '</div>'
         + '<div class="col-right">'
         + '<button class="dev">dev</button>'
         + '<br/>'
         + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
+        + '</div>'
+        + '<div class="col-left">'
+        + '<span class="name">'+this.name+'</span> '
+        + ' - <span class="upgrades">v'+this.upgrades+'</span>'
+        + ' <br/>'
+        + '</div>'
+        + '<div class="col-left" id="dev">'
+        + '  Max attraction : <span class="max-attraction">'+this.maxAttraction+'</span>'
+        + '  <br/>'
+        + '  Attraction : <span class="attraction">'+this.getAttraction()+'</span>'
+        + '</div>'
+        + '<div class="players col-left" id="players-'+this.code+'">'
+        +   this.players.toHTML()
         + '</div>'
         + '</div>').appendTo("#games-container");
       $('#game-'+this.code+' div.col-right button.dev')
@@ -105,7 +111,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
   }
 
   this.whateverHappensToMyGame = function() {
-    this.maxAttraction = Math.max(this.getAttraction, this.maxAttraction);
+    this.maxAttraction = Math.max(this.getAttraction(), this.maxAttraction);
     if (this.upgrades > 0) {
       this.whateverHappensToMyPlayers();
     }
@@ -119,6 +125,11 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
   this.whateverHappensToMyPlayers = function() {
     this.players.playersPlay();
   };
+
+  this.updateUI = function() {
+    $('#game-'+this.code+' span.max-attraction').html(this.maxAttraction);
+    $('#game-'+this.code+' span.attraction').html(this.getAttraction());
+  }
 }
 
 /* Wrapper for all the games */
@@ -142,7 +153,7 @@ var games = {
       { noob: {
           clicksPerTick: 0.001,
           attractionToUnlock: 5,
-          avgTime: 20
+          avgTime: 50
         },
         casual: {
           clicksPerTick: 0.01,
@@ -177,6 +188,7 @@ var games = {
     for (var g in this.list) {
       var game = this.list[g];
       game.whateverHappensToMyGame();
+      game.updateUI();
     }
   }
 };

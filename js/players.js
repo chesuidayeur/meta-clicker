@@ -3,31 +3,31 @@ function Players(game, conf) {
 
   this.data = {
     noob: {
-      number: 0,
+      list: [],
       clicksPerTick: conf.noob.clicksPerTick,
       attractionToUnlock: conf.noob.attractionToUnlock,
       avgTime: conf.noob.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     casual : {
-      number: 0,
+      list: [],
       clicksPerTick: conf.casual.clicksPerTick,
       attractionToUnlock: conf.casual.attractionToUnlock,
       avgTime: conf.casual.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     seasoned : {
-      number: 0,
+      list: [],
       clicksPerTick: conf.seasoned.clicksPerTick,
       attractionToUnlock: conf.seasoned.attractionToUnlock,
       avgTime: conf.seasoned.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     hardcore : {
-      number: 0,
+      list: [],
       clicksPerTick: conf.hardcore.clicksPerTick,
       attractionToUnlock: conf.hardcore.attractionToUnlock,
       avgTime: conf.hardcore.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     nolife : {
-      number: 0,
+      list: [],
       clicksPerTick: conf.nolife.clicksPerTick,
       attractionToUnlock: conf.nolife.attractionToUnlock,
       avgTime: conf.nolife.avgTime, /* Number of ticks */
@@ -37,21 +37,29 @@ function Players(game, conf) {
     var spans = [];
     for (var type in this.data) {
       var disabled = 'style="display: none;"';
+      var sep = '';
       if (this.data[type].attractionToUnlock <= this.game.attraction) {
         disabled = '';
       }
-      spans.add('<span class="'+type+'" title="'+type+'s" '+disabled+'>'+this.data[type].number+'</span>');
+      if (type != 'noob') {
+        sep = ' / '
+      }
+      spans.add('<span class="'+type+'" title="'+type+'s" '+disabled+'>'+sep+this.data[type].list.length+'</span>');
     }
-    return spans.join(' ');
+    return 'Players : '+spans.join('');
   };
 
   this.updateUI = function() {
     for (var type in this.data) {
+      var sep = '';
+      if (type != 'noob') {
+        sep = ' / '
+      }
       var elt = $('#players-'+this.game.code+' span.'+type);
-      if ($(elt).css("display") == 'none' && this.data[type].number > 0) {
+      if ($(elt).css("display") == 'none' && this.data[type].list.length > 0) {
         $(elt).css("display", "");
       }
-      $(elt).html(this.data[type].number);
+      $(elt).html(sep+this.data[type].list.length);
     }
   };
 
@@ -59,7 +67,7 @@ function Players(game, conf) {
     var prod = 0;
 
     for (var type in this.data) {
-      prod += this.data[type].number * this.data[type].clicksPerTick;
+      prod += this.data[type].list.length * this.data[type].clicksPerTick;
     }
 
     return prod;
@@ -69,7 +77,7 @@ function Players(game, conf) {
     var newPlayers = 0;
     var rand = Math.random() * 10;
     if (rand < this.game.getAttraction()) {
-      console.log('yeah, new players');
+      UI.log('yeah, new players');
       newPlayers = Math.ceil(Math.log(this.game.getAttraction()));
     }
     return newPlayers;
@@ -78,63 +86,45 @@ function Players(game, conf) {
   this.playersPlay = function() {
     var newPlayers = this.newPlayers();
     for (var type in this.data) {
-      //console.log('Player : '+type);
+      //UI.log('Player : '+type);
       var player = this.data[type];
-      player.playedTime += player.number;
-      if (type == 'noob' && player.number > 0) {
-        console.log("Played time : "+player.playedTime);
-      }
+      player.list = player.list.map(function(n) { return n+1; });
 
       /* Test wether some players are fed up */
       var gameAttraction = this.game.getAttraction();
       var leavingThreshold = this.getLeavingThreshold();
-      if (false && type == 'noob' && player.number > 0) {
-        console.log('Played Time / Threshold / ThresholdPlayer : '+player.playedTime+' / '+leavingThreshold+' / '+(leavingThreshold * player.number));
-      }
-      if (player.playedTime > leavingThreshold * player.number) {
-        /* Number of leaving players */
-        var rand = Math.random() * (1 - 0.8) + 0.9; /* 0.9 <= Rand <= 1.1 */
-        var ratio = player.playedTime / leavingThreshold;
-        console.log('Rand * ratio : '+rand+' * '+ratio+' = '+(rand * ratio));
-        var leavingPlayers = Math.min(player.number, Math.floor(rand * ratio));
-        console.log("Leaving players : "+leavingPlayers);
-        player.number -= leavingPlayers;
-        if (player.number <= 0) {
-          player.number = 0;
-          player.playedTime = 0;
-        } else {
-          player.playedTime -= leavingPlayers * leavingThreshold;
+      var remainingPlayers = player.list
+      for (var p in player.list) {
+        var rand = Math.random();
+        var proba = 1 / (1 + Math.exp(-player.list[p] + leavingThreshold));
+        if (rand < proba) {
+          UI.log('Leaving player');
+          remainingPlayers.splice(p, 1);
         }
       }
+      player.list = remainingPlayers;
 
+      /* Test wether some players level up */
       var lvlups = 0;
-      /* Test whether some players level up */
-      if (type == 'noob' && player.number > 0) {
-        console.log('Lvlup : '+player.playedTime+' | '+player.avgTime+' | '+(player.avgTime * player.number));
-      }
-      if (type != 'nolife' &&
-          player.number > 0 &&
-          player.playedTime > player.avgTime * player.number &&
+      if (player.list.length > 0 &&
           this.game.maxAttraction > player.attractionToUnlock) {
-        /* Number of players leveling up */
-        lvlups = Math.min(
-          player.number,
-          Math.floor(
-            (Math.random() * (1 - 0.8) + 0.9)
-            * player.playedTime / player.avgTime
-        ));
-        console.log('Lvl ups : '+lvlups);
-        player.number -= lvlups;
-        if (player.number <= 0) {
-          player.number = 0;
-          player.playedTime = 0;
-        } else {
-          player.playedTime -= lvlups * player.avgTime;
+        for (var p in player.list) {
+          var rand = Math.random();
+          var proba = 1 / (1 + Math.exp(-player.list[p] + player.avgTime));
+          if (rand < proba) {
+            UI.log('lvl up');
+            remainingPlayers.splice(p, 1);
+            lvlups++;
+          }
         }
+        player.list = remainingPlayers;
       }
 
       /* New players ! */
-      player.number += newPlayers;
+      while (newPlayers > 0) {
+        player.list.push(1);
+        newPlayers--;
+      }
       newPlayers = lvlups;
     }
     
@@ -144,7 +134,7 @@ function Players(game, conf) {
   this.getAttractionBonus = function() {
     var bonus = 0;
     for (var type in this.data) {
-      bonus += this.data[type].number;
+      bonus += this.data[type].list.length;
     }
     return bonus * 0.01;
   };

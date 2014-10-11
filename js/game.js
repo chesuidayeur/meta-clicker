@@ -6,14 +6,16 @@ var metaGame = {
 var Timer = {
   delay : 250, /* Tick duration in ms */
   pid : null,
-  day : 10, /* Number of ticks */
+  dayLength : 10, /* Number of ticks */
+  day: 0,
 
   dayCounter : 0,
 
   update : function () {
     Timer.dayCounter += 1
-    if (Timer.dayCounter == Timer.day) {
-      console.log("A new day has passed !");
+    if (Timer.dayCounter == Timer.dayLength) {
+      Timer.day++;
+      $("span#days").html(Timer.day);
       games.update();
       Timer.dayCounter = 0;
     }
@@ -63,6 +65,9 @@ var UI = {
     }
   },
   update : function () {
+  },
+  log: function(message) {
+    $('div#log').html('Day '+Timer.day+' : '+message+'<br/>'+$('div#log').html());
   }
 }
 

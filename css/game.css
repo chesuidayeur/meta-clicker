@@ -15,11 +15,20 @@ div.game {
   border-radius: 5px;
   display: block;
   width: 300px;
+  overflow: hidden;
 }
 
-div.game div.col-left {
-  float: left;
-  width: 215px;
+div.col-left {
+  overflow: hidden;
+  width: auto;
+}
+
+div.col-right {
+  float: right;
+}
+
+div.game div.col-right {
+  width: 33%;
 }
 
 div.game div span.number {
