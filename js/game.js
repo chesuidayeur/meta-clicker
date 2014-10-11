@@ -73,6 +73,11 @@ var UI = {
 
 $(document).ready(function () {
 
+  $("button, input[type='button'], input[type='submit']").button()
+    .bind('mouseup', function() {
+        $(this).blur();     // prevent jquery ui button from remaining in the active state
+  });
+
   resourcePool.init();
   games.init();
   distillers.init();
