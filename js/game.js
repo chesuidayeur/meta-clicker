@@ -73,6 +73,7 @@ var UI = {
 
 $(document).ready(function () {
 
+  // Hack from bwhit from http://stackoverflow.com/questions/3861307
   $("button, input[type='button'], input[type='submit']").button()
     .bind('mouseup', function() {
         $(this).blur();     // prevent jquery ui button from remaining in the active state
