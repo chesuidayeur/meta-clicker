@@ -35,7 +35,7 @@ var Timer = {
 var distillers = {
   list : {},
   init : function() {
-    this.list['clic'] = new Distiller('clic', 1, 'gamelore');
+    this.list['clic'] = new Distiller('clic', 1, 'money');
   }
 };
 
@@ -50,6 +50,7 @@ var UI = {
           var res = $(this).attr('resource');
           UI.clickers.elts[res].click();
         });
+        $(this).attr('title', resourcePool.resources[res].flavor);
       });
     }
   },

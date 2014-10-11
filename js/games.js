@@ -147,7 +147,7 @@ var games = {
   init : function() {
     this.list['protoIncGame'] = new Game(
       'protoIncGame', 'Proto Incremental Game',
-      10, 'gamelore',
+      10, 'money',
       1.1, /* Ratio */
       1, /* Base attraction */
       { noob: {

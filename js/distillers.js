@@ -45,7 +45,8 @@ function Distiller(resource, amount, resultResource) {
       this.displayed = true;
       $('<button id="distill-'+this.resource+'" resource="'+this.resource+'">Distill '+this.resource+'</button>').appendTo($('#thingsToClick'));
       $("#distill-"+this.resource)
-        .button({ disabled : !this.enabled })
+        .button({ disabled : !this.enabled })
+        .attr('title', resourcePool.resources[this.resultResource].flavor)
         .click(function() {
           $(this).button("disable");
           var distiller = distillers.list[$(this).attr('resource')];

@@ -1,4 +1,4 @@
-function Resource(name) {
+function Resource(name, flavor) {
   /* Name of the resource */
   this.name = name;
   /* Initial value of the resource */
@@ -7,6 +7,8 @@ function Resource(name) {
   this.accValue = 0;
   /* Is the resource visible ? */
   this.displayed = false;
+  /* Add some depth to your game */
+  this.flavor = flavor;
   /* Nice function, really */
   this.toString = function() {
     return this.name + " : " + this.value;
@@ -38,8 +40,8 @@ var resourcePool = {
   resources : {},
   /* Where resources are created, a quasi mystical place */
   init : function() {
-    this.resources['clic'] = new Resource('clic');
-    this.resources['gamelore'] = new Resource('gamelore');
+    this.resources['clic'] = new Resource('clic', 'Click it !!');
+    this.resources['money'] = new Resource('money',  'Sell your clics to mouse facturing companies !');
   }
 };
 
