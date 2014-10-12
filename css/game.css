@@ -31,6 +31,11 @@ div.game div.col-right {
   width: 33%;
 }
 
+div#log {
+  height: 700px;
+  overflow: hidden;
+}
+
 div.game div span.number {
   font-weight: bold;
 }
