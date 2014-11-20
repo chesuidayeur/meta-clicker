@@ -67,7 +67,11 @@ function Players(game, conf) {
     var prod = 0;
 
     for (var type in this.data) {
-      prod += this.data[type].list.length * this.data[type].clicksPerTick;
+      var cpt = this.data[type].clicksPerTick;
+      var playersList = this.data[type].list.length
+      for (var k in playersList) {
+        prod += cpt * (1 + playersList[k] * 0.01)
+      }
     }
 
     return prod;

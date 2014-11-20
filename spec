@@ -18,10 +18,16 @@ tu perds tes clics, mais tu gardes ton expérience de
 codeur
 
 
+Attraction d'un jeu :
+Score arbitraire représentant l'attrait d'un jeu pour des joueurs.
+Plus le score est haut, plus le jeu est attrayant.
+
 Un jeu attire des joueurs
  1. Un joueur génère des clics
  2. Le nombre de clics par joueur est fonction de l'ancienneté du joueur
+      click par tick de base + pourcentage du temps passé à jouer
  3. Un joueur se lasse au bout d'un moment : fonction de l'attrait du jeu
+      
  4. L'attrait d'un jeu est fonction de
    + sa version
    + son nombres de bugs
@@ -55,42 +61,47 @@ Développeurs :
  5. Plus un développeur est expérimenté, plus il consomme de clics (limites à implémenter ?)
 
 
-Modéliser les joueurs d'un jeu :
-{
-  noob : {
-    nombre : N,
-    clicParTick : 0.XX,
-    attraitMax : 42,
-    tempsMoy : 10, /* Nombre de ticks */
-    tempsPassé : 0 /* Nombre de ticks */
-  },
-  confirmé : { … }
-  expérimenté : { … }
-  cœurdur : { … }
-  sansvie : { … }
-}
+Mail Manf' 2014-10-18
 
-chaque tick :
-  temps passé += nombre joueurs
+J'ai beaucoup aimé ton idée de voir l'efficacité d'un jeu fluctuer dans le temps. Ça m'a donné l'idée suivante :
+Dans un "clicker" classique, on achète des bâtiments ; ces bâtiments sont de plus en plus chers au fur et à mesure qu'on en achète ; parallèlement, les bâtiments les plus chers sont les plus efficaces.
 
-/* Si les joueurs ont passé suffisamment de temps */
-si test attrait : temps passé - attrait x Nj > 0
-  Nombre de joueurs qui partent :
-    partie entiere (rand(difficulté, 1) x (temps passé / (temps moy x Nj))
+Dans ce méta-clicker, on "achète" - on crée - des jeux ; ces jeux sont de plus en plus chers à administrer et à développer, plus les versions (leur "nombre") augmente.
 
-  temps passé -= nombre de joueurs ayant quitté le jeu x temps moy
-  
-  si plus de joueurs :
-    temps passé = 0
+Chaque jeu a une base de joueurs, qui fluctue. Le type du jeu, la version du jeu et la base de joueurs donne le nombre de clics par seconde du jeu.
 
-/* Si les joueurs ont passé suffisamment de temps */
-si test noob -> temps passé - (temps moy x Nj) > 0 et niveau confirmé ouvert
-  Nombre de joueur passant de niveau :
-    /* Un peu moins que le nombre de joueurs ayant joué suffisamment longtemps */
-    partie entière (rand(difficulté, 1) x (temps passé / (temps moy x Nj))
+Chaque jeu peut bugger. Pour remédier à cela, on peut mettre des dév sur chaque jeu. On a un nombre fini de dév. Les dév peuvent être recrutés (avec de l'argent ? À terme, en end-game, en finançant une école ?).
+Parallèlement, si un jeu a une base importante de joueurs, il peut y avoir des mods de fans / des patch non-officiels / des aides bénévoles sur les forums. Ça ne se déclenche que quand le jeu a une grosse base de joueurs - ainsi, il peut être intéressant de ne pas mettre de dév sur un jeu populaire, mais risqué, puisque dès que sa base diminue un peu, paf, plus personne ne s'en occupe.
 
-  temps passé -= nombre de joueurs ayant passé de niveau x temps moy
-  
-  si plus de joueurs :
-    temps passé = 0
+Chaque jeu a une proba de bugger, qui grossit avec le temps. On peut la faire diminuer en changeant de version - version mineure, moins chère ; version majeure, plus chère, mais diminution drastique de la proba. La vitesse d'augmentation de la proba du bug dépend de la version du jeu (un jeu version 150 aura moins de chance de bugger qu'un jeu version 1) et surtout du nombre de dév dessus.
+
+Lien clic / argent ? Bêtement en expliquant qu'on se fait de la thune avec du pagerank ? Ou quelque chose de plus baroque, genre on récupère l'énergie potentielle des boutons de souris ? En tous les cas, ça permet de voir l'argent comme une ressource, donc avec un stock et une vitesse (positive ou négative). Un dév consomme de cette ressource.
+
+Parallèlement, je suis intéressé de creuser deux pistes :
+1) s'il est évident qu'il y aura des "technologies" / améliorations à rechercher (améliorant les dév, diminuant l'occurrence des bugs, etc. genre phpBB => un forum pour générer du lore sur un jeu), je me demande s'il ne serait pas chouette de proposer des chemins différents (et mutuellement exclusifs) à suivre. J'avoue ne pas avoir d'idées pour l'instant.
+
+2) À terme, pour le end-game, on pourrait imaginer de proposer son jeu sur, mettons, reddit, ou kongegrate ou... et donc de devoir rivaliser avec d'autres créateurs de jeu (faire de la pub ?). On peut imaginer une sorte de "tuto" où les autres créateurs sont des IA - que l'on élimine en leur piquant tous leurs joueurs ; et pourquoi pas, à terme, proposer une sorte de compétition ? Veiller à ce que cela ne détruise pas l'aspect "idle" du jeu.
+
+Ainsi, je verrai bien un truc du style (les chiffres sont au pif) :
+Clics générés : 12,34 millions
+Portefeuille : 31 415 € (+15 € / sec ; +22 grâce aux jeux, -7 pour payer les dév)
+
+Jeu1 : version 2.34 -- augmenter de version (9842 €)
+12345 joueurs en ce moment -- faire de la pub (750 €)
+87563 clics / sec
+Proba de bug : 3.5%
+Développeurs dessus : 4 -- +/- développeurs
+
+Jeu2 : version 0.4 -- augmenter de version (9842 €)
+12345 joueurs en ce moment -- faire de la pub (750 €)
+87563 clics / sec
+Proba de bug : 15.5%
+Développeurs dessus : 3 -- +/- développeurs
+
+Créer Jeu3 : 6543 €
+
+Rechercher :
+Ramens (9876€) : les dév sont plus efficaces ;
+Yahoogle ads : chaque joueur ramène plus d'argent
+etc.
 
