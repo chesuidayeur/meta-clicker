@@ -36,6 +36,11 @@ div#log {
   overflow: hidden;
 }
 
+div#resources {
+  float: left;
+  width: 150px;
+}
+
 div.game div span.number {
   font-weight: bold;
 }
