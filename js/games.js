@@ -152,27 +152,27 @@ var games = {
       1, /* Base attraction */
       { noob: {
           clicksPerTick: 0.001,
-          attractionToUnlock: 5,
+          minAttractionToLvlup: 5,
           avgTime: 50
         },
         casual: {
           clicksPerTick: 0.01,
-          attractionToUnlock: 10,
+          minAttractionToLvlup: 10,
           avgTime: 750
         },
         seasoned: {
           clicksPerTick: 0.1,
-          attractionToUnlock: 20,
+          minAttractionToLvlup: 20,
           avgTime: 1000
         },
         hardcore: {
           clicksPerTick: 1,
-          attractionToUnlock: 30,
+          minAttractionToLvlup: 30,
           avgTime: 5000
         },
         nolife: {
           clicksPerTick: 2,
-          attractionToUnlock: 40,
+          minAttractionToLvlup: 40,
           avgTime: 15000
         }
       })

@@ -5,31 +5,31 @@ function Players(game, conf) {
     noob: {
       list: [],
       clicksPerTick: conf.noob.clicksPerTick,
-      attractionToUnlock: conf.noob.attractionToUnlock,
+      minAttractionToLvlup: conf.noob.minAttractionToLvlup,
       avgTime: conf.noob.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     casual : {
       list: [],
       clicksPerTick: conf.casual.clicksPerTick,
-      attractionToUnlock: conf.casual.attractionToUnlock,
+      minAttractionToLvlup: conf.casual.minAttractionToLvlup,
       avgTime: conf.casual.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     seasoned : {
       list: [],
       clicksPerTick: conf.seasoned.clicksPerTick,
-      attractionToUnlock: conf.seasoned.attractionToUnlock,
+      minAttractionToLvlup: conf.seasoned.minAttractionToLvlup,
       avgTime: conf.seasoned.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     hardcore : {
       list: [],
       clicksPerTick: conf.hardcore.clicksPerTick,
-      attractionToUnlock: conf.hardcore.attractionToUnlock,
+      minAttractionToLvlup: conf.hardcore.minAttractionToLvlup,
       avgTime: conf.hardcore.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ },
     nolife : {
       list: [],
       clicksPerTick: conf.nolife.clicksPerTick,
-      attractionToUnlock: conf.nolife.attractionToUnlock,
+      minAttractionToLvlup: conf.nolife.minAttractionToLvlup,
       avgTime: conf.nolife.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ }};
 
@@ -38,7 +38,7 @@ function Players(game, conf) {
     for (var type in this.data) {
       var disabled = 'style="display: none;"';
       var sep = '';
-      if (this.data[type].attractionToUnlock <= this.game.attraction) {
+      if (this.data[type].minAttractionToLvlup <= this.game.attraction) {
         disabled = '';
       }
       if (type != 'noob') {
@@ -111,7 +111,7 @@ function Players(game, conf) {
       /* Test wether some players level up */
       var lvlups = 0;
       if (player.list.length > 0 &&
-          this.game.maxAttraction > player.attractionToUnlock) {
+          this.game.maxAttraction > player.minAttractionToLvlup) {
         for (var p in player.list) {
           var rand = Math.random();
           var proba = 1 / (1 + Math.exp(-player.list[p] + player.avgTime));
