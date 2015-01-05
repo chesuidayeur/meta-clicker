@@ -105,3 +105,27 @@ Ramens (9876€) : les dév sont plus efficaces ;
 Yahoogle ads : chaque joueur ramène plus d'argent
 etc.
 
+
+
+
+
+
+"Write code" -> crée du "code"
+
+Avec suffisamment de code, on peut créer / améliorer des jeux
+
+Les jeux génèrent des clics
+
+On peut revendre des clics à des fabricants de souris -> $_$ money $_$
+
+Avec de l'argent, on peut
+ * recruter des développeurs
+ * faire de la pub pour un jeu
+ * acheter certaines améliorations (des pizzas et de la bière pour les développeurs)
+
+On peut libérer un jeu :
+ * Malus :
+  - plus de pub commerciales (uniquement forums et autres)
+  - upgrade plus cher en code : il faut réussir à mettre la communauté d'accord
+ * Bonus :
+  - devs gratuits : nombre selon la popularité du jeu

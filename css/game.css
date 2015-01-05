@@ -16,6 +16,7 @@ div.game {
   display: block;
   width: 300px;
   overflow: hidden;
+  margin-top: 5px;
 }
 
 div.col-left {
@@ -39,6 +40,7 @@ div#log {
 div#resources {
   float: left;
   width: 150px;
+  height: 1200px;
 }
 
 div.game div span.number {

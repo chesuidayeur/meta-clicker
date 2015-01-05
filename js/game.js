@@ -35,7 +35,7 @@ var Timer = {
 var distillers = {
   list : {},
   init : function() {
-    this.list['clic'] = new Distiller('clic', 1, 'money');
+    this.list['clic'] = new Distiller('clic', 10, 'money');
   }
 };
 

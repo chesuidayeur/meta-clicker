@@ -40,6 +40,7 @@ var resourcePool = {
   resources : {},
   /* Where resources are created, a quasi mystical place */
   init : function() {
+    this.resources['code'] = new Resource('code', 'Coding time !');
     this.resources['clic'] = new Resource('clic', 'Click it !!');
     this.resources['money'] = new Resource('money',  'Sell your clics to mouse facturing companies !');
   }

@@ -79,8 +79,9 @@ function Players(game, conf) {
 
   this.newPlayers = function() {
     var newPlayers = 0;
-    var rand = Math.random() * 10;
-    if (rand < this.game.getAttraction()) {
+    var rand = Math.random();
+    // 10% probability plus epsilon depending on game attraction
+    if (rand < 0.1 + (this.game.getAttraction() / 100)) {
       UI.log('yeah, new players');
       newPlayers = Math.ceil(Math.log(this.game.getAttraction()));
     }

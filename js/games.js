@@ -147,8 +147,39 @@ var games = {
   init : function() {
     this.list['protoIncGame'] = new Game(
       'protoIncGame', 'Proto Incremental Game',
-      10, 'money',
-      1.1, /* Ratio */
+      30, 'code',
+      1.25, /* Ratio */
+      1, /* Base attraction */
+      { noob: {
+          clicksPerTick: 0.001,
+          minAttractionToLvlup: 5,
+          avgTime: 30
+        },
+        casual: {
+          clicksPerTick: 0.005,
+          minAttractionToLvlup: 15,
+          avgTime: 120
+        },
+        seasoned: {
+          clicksPerTick: 0.02,
+          minAttractionToLvlup: 30,
+          avgTime: 1000
+        },
+        hardcore: {
+          clicksPerTick: 0.1,
+          minAttractionToLvlup: 50,
+          avgTime: 5000
+        },
+        nolife: {
+          clicksPerTick: 0.5,
+          minAttractionToLvlup: 1000000,
+          avgTime: 15000
+        }
+      });
+    this.list['doughnutClicker'] = new Game(
+      'doughnutClicker', 'Doughnut Clicker : get em all doughnuts',
+      1000, 'code',
+      1.2, /* Ratio */
       1, /* Base attraction */
       { noob: {
           clicksPerTick: 0.001,
@@ -172,10 +203,10 @@ var games = {
         },
         nolife: {
           clicksPerTick: 2,
-          minAttractionToLvlup: 40,
+          minAttractionToLvlup: 1000000,
           avgTime: 15000
         }
-      })
+      });
   },
   /* Where we ask all our games if they might produce something clic-related */
   production : function() {
