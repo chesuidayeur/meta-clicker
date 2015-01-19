@@ -54,6 +54,9 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
         + '<button class="dev">dev</button>'
         + '<br/>'
         + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
+        + '<br/>'
+        + '<br/>'
+        + '<button class="clicker">Play</button>'
         + '</div>'
         + '<div class="col-left">'
         + '<span class="name">'+this.name+'</span> '
@@ -76,6 +79,15 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
           var game = games.list[$(this).parent().parent().attr('code')];
           game.develop();
           game.toggle();
+        });
+      $('#game-'+this.code+' div.col-right button.clicker')
+        .button({ disabled: !this.enabled })
+        .click(function() {
+          $(this).button("disable");
+          var game = games.list[$(this).parent().parent().attr('code')];
+          game.click();
+          $(this).button("enable");
+          UI.unglitchButtons();
         });
     }
     /* If there's enough resources to dev the game, let's enable the dev button ! Or, we disable it */
@@ -104,6 +116,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
     res.consume(amount);
     $("#game-"+this.code+' div span.upgrades').html('v'+this.upgrades);
     $("#game-"+this.code+' div span.cost span.value').html(Math.round(this.getCost() * 1000) / 1000);
+    $('#game-'+this.code+' div button.clicker').button("option", "disabled", !this.enabled);
   };
 
   this.getAttraction = function() {
@@ -130,6 +143,11 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
     $('#game-'+this.code+' span.max-attraction').html(this.maxAttraction);
     $('#game-'+this.code+' span.attraction').html(this.getAttraction());
   }
+
+  this.click = function() {
+    //resourcePool.resources['clic'].add(this.players.data.seasoned.clicksPerTick);
+    resourcePool.resources['clic'].add(1);
+  }
 }
 
 /* Wrapper for all the games */
@@ -147,7 +165,7 @@ var games = {
   init : function() {
     this.list['protoIncGame'] = new Game(
       'protoIncGame', 'Proto Incremental Game',
-      30, 'code',
+      20, 'code',
       1.25, /* Ratio */
       1, /* Base attraction */
       { noob: {
@@ -207,6 +225,13 @@ var games = {
           avgTime: 15000
         }
       });
+
+    UI.registerRenderer(this.render.bind(this));
+  },
+  render : function() {
+    for (var g in this.list) {
+      this.list[g].render();
+    };
   },
   /* Where we ask all our games if they might produce something clic-related */
   production : function() {

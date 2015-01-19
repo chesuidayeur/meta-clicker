@@ -43,6 +43,14 @@ var resourcePool = {
     this.resources['code'] = new Resource('code', 'Coding time !');
     this.resources['clic'] = new Resource('clic', 'Click it !!');
     this.resources['money'] = new Resource('money',  'Sell your clics to mouse facturing companies !');
+    this.resources['dev'] = new Resource('dev', 'Code generating organism, may be sentient');
+    
+    UI.registerRenderer(this.render.bind(this));
+  },
+  render : function() {
+    for (var res in this.resources) {
+      this.resources[res].render();
+    };
   }
 };
 

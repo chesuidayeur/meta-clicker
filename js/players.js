@@ -83,7 +83,7 @@ function Players(game, conf) {
     // 10% probability plus epsilon depending on game attraction
     if (rand < 0.1 + (this.game.getAttraction() / 100)) {
       UI.log('yeah, new players');
-      newPlayers = Math.ceil(Math.log(this.game.getAttraction()));
+      newPlayers = Math.ceil(Math.log10(this.game.getAttraction()));
     }
     return newPlayers;
   };
@@ -91,40 +91,41 @@ function Players(game, conf) {
   this.playersPlay = function() {
     var newPlayers = this.newPlayers();
     for (var type in this.data) {
-      //UI.log('Player : '+type);
       var player = this.data[type];
-      player.list = player.list.map(function(n) { return n+1; });
-
-      /* Test wether some players are fed up */
-      var gameAttraction = this.game.getAttraction();
-      var leavingThreshold = this.getLeavingThreshold();
-      var remainingPlayers = player.list
-      for (var p in player.list) {
-        var rand = Math.random();
-        var proba = 1 / (1 + Math.exp(-player.list[p] + leavingThreshold));
-        if (rand < proba) {
-          UI.log('Leaving player');
-          remainingPlayers.splice(p, 1);
-        }
-      }
-      player.list = remainingPlayers;
-
-      /* Test wether some players level up */
-      var lvlups = 0;
-      if (player.list.length > 0 &&
-          this.game.maxAttraction > player.minAttractionToLvlup) {
+      if (player.list.length > 0) {
+        player.list = player.list.map(function(n) { return n+1; });
+  
+        /* Test wether some players are fed up */
+        var gameAttraction = this.game.getAttraction();
+        var leavingThreshold = player.avgTime + this.getLeavingThresholdBonus();
+        var remainingPlayers = player.list;
         for (var p in player.list) {
           var rand = Math.random();
-          var proba = 1 / (1 + Math.exp(-player.list[p] + player.avgTime));
+          var proba = 1 / (1 + Math.exp(-player.list[p] + leavingThreshold));
           if (rand < proba) {
-            UI.log('lvl up');
+            UI.log('Leaving player');
             remainingPlayers.splice(p, 1);
-            lvlups++;
           }
         }
         player.list = remainingPlayers;
+  
+        /* Test wether some players level up */
+        var lvlups = 0;
+        if (player.list.length > 0 &&
+            this.game.maxAttraction > player.minAttractionToLvlup) {
+          for (var p in player.list) {
+            var rand = Math.random();
+            var proba = 1 / (1 + Math.exp(-player.list[p] + player.avgTime));
+            if (rand < proba) {
+              UI.log('lvl up');
+              remainingPlayers.splice(p, 1);
+              lvlups++;
+            }
+          }
+          player.list = remainingPlayers;
+        }
       }
-
+  
       /* New players ! */
       while (newPlayers > 0) {
         player.list.push(1);
@@ -144,7 +145,7 @@ function Players(game, conf) {
     return bonus * 0.01;
   };
 
-  this.getLeavingThreshold = function() {
-    return this.game.getAttraction() * 0.1 * 100;
+  this.getLeavingThresholdBonus = function() {
+    return this.game.getAttraction();
   }
 }

@@ -113,8 +113,11 @@ etc.
 "Write code" -> crée du "code"
 
 Avec suffisamment de code, on peut créer / améliorer des jeux
+On peut créer des versions mineures et majeures. Également des corrections de bugs
 
 Les jeux génèrent des clics
+Des joueurs s'y intéressent, génèrent des clics, puis arrêtent ou deviennent des joueurs plus chevronnés
+Le jouer peut également "jouer" au jeu et générer des clics.
 
 On peut revendre des clics à des fabricants de souris -> $_$ money $_$
 
@@ -129,3 +132,7 @@ On peut libérer un jeu :
   - upgrade plus cher en code : il faut réussir à mettre la communauté d'accord
  * Bonus :
   - devs gratuits : nombre selon la popularité du jeu
+
+Un dev génère des lignes de code.
+Un dev coûte de l'argent, à recruter et à payer.
+Si plus d'argent, le dev se barre.

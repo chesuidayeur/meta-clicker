@@ -34,12 +34,19 @@ var Timer = {
 
 var distillers = {
   list : {},
+  render : function() {
+    for (var d in this.list) {
+      this.list[d].render();
+    }
+  },
   init : function() {
     this.list['clic'] = new Distiller('clic', 10, 'money');
+    UI.registerRenderer(this.render.bind(this));
   }
 };
 
 var UI = {
+  renderers : [],
   clickers : {
     elts : {},
     init : function () {
@@ -54,32 +61,28 @@ var UI = {
       });
     }
   },
+  registerRenderer : function(callback) {
+    this.renderers.add(callback);
+  },
   render : function () {
-    for (var res in resourcePool.resources) {
-      resourcePool.resources[res].render();
-    };
-    for (var g in games.list) {
-      games.list[g].render();
-    };
-    for (var d in distillers.list) {
-      distillers.list[d].render();
-    }
+    this.renderers.each(function(r) { r(); })
   },
   update : function () {
   },
   log: function(message) {
     $('div#log').html('Day '+Timer.day+' : '+message+'<br/>'+$('div#log').html());
+  },
+  unglitchButtons : function () {
+    // Hack from bwhit from http://stackoverflow.com/questions/3861307
+    $("button, input[type='button'], input[type='submit']").button()
+      .bind('mouseup', function() {
+          $(this).blur();     // prevent jquery ui button from remaining in the active state
+    });
   }
 }
 
 $(document).ready(function () {
-
-  // Hack from bwhit from http://stackoverflow.com/questions/3861307
-  $("button, input[type='button'], input[type='submit']").button()
-    .bind('mouseup', function() {
-        $(this).blur();     // prevent jquery ui button from remaining in the active state
-  });
-
+  UI.unglitchButtons();
   resourcePool.init();
   games.init();
   distillers.init();
