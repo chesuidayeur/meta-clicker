@@ -136,3 +136,7 @@ On peut libérer un jeu :
 Un dev génère des lignes de code.
 Un dev coûte de l'argent, à recruter et à payer.
 Si plus d'argent, le dev se barre.
+Un dev est payé à la fin de chaque mois : si pas assez d'argent le dev se barre.
+Pour avoir un dev il faut des locaux (garage, bureaux, campus, etc) : ça s'achète.
+
+On peut générer de l'argent automatiquement en recrutant des commerciaux qui revendent nos clics
