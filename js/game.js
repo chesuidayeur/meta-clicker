@@ -32,19 +32,6 @@ var Timer = {
   }
 };
 
-var distillers = {
-  list : {},
-  render : function() {
-    for (var d in this.list) {
-      this.list[d].render();
-    }
-  },
-  init : function() {
-    this.list['clic'] = new Distiller('clic', 10, 'money');
-    UI.registerRenderer(this.render.bind(this));
-  }
-};
-
 var UI = {
   renderers : [],
   clickers : {
