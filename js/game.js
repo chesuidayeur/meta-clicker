@@ -55,7 +55,6 @@ var UI = {
 }
 
 $(document).ready(function () {
-  //UI.unglitchButtons();
   resourcePool.init();
   games.init();
   distillers.init();
