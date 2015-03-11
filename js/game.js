@@ -73,7 +73,7 @@ $(document).ready(function () {
   resourcePool.init();
   games.init();
   distillers.init();
-  UI.clickers.init();
+  //UI.clickers.init();
 
   Timer.start();
 });

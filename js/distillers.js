@@ -1,11 +1,21 @@
 /* General class for a button */
-function Clicker(resource) {
+function Clicker(resource, text, flavor, container) {
   /* Resource produced buy a click */
   this.resource = resource;
+  /* DOM element where to put the clicker */
+  this.container = container;
+  /* Description of the clicker */
+  this.text = text;
+  /* Tip */
+  this.flavor = flavor;
   /* What happens when you click. Mainly adding some resource to the pool */
   this.click = function() {
     resourcePool.resources[this.resource].add(1);
   };
+  this.display = function() {
+    $('<button id="'+this.resource+'Button" class="clicker" resource="'+this.resource+'" title="'+this.flavor+'">'+this.text+'</button>').appendTo(this.container);
+    $('button#'+this.resource+'Button').button().click(this.click.bind(this));
+  }
 };
 
 /* General class to transform a resource into another */
