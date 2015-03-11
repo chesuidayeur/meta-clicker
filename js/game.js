@@ -34,20 +34,6 @@ var Timer = {
 
 var UI = {
   renderers : [],
-  clickers : {
-    elts : {},
-    init : function () {
-      $('.clicker').each(function() {
-        var res = $(this).attr('resource');
-        UI.clickers.elts[res] = new Clicker(res);
-        $(this).button().click(function() {
-          var res = $(this).attr('resource');
-          UI.clickers.elts[res].click();
-        });
-        $(this).attr('title', resourcePool.resources[res].flavor);
-      });
-    }
-  },
   registerRenderer : function(callback) {
     this.renderers.add(callback);
   },
@@ -73,7 +59,6 @@ $(document).ready(function () {
   resourcePool.init();
   games.init();
   distillers.init();
-  //UI.clickers.init();
 
   Timer.start();
 });
