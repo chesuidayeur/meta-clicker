@@ -40,3 +40,23 @@ QUnit.test("Resource testing", function(assert) {
   res.render();
   assert.equal($("#qunit-fixture div.resources div#cookies span.value").html(), "5.142");
 });
+
+/* Clicker testing */
+QUnit.test("Clicker testing", function(assert) {
+  /* We need a resource for a clicker, let's create a mock one */
+  resourcePool.resources['cookies'] = {
+    name: 'cookies',
+    value: 0,
+    flavor: 'yummy',
+    add: function() { this.value += 1; }
+  };
+
+  var c = new Clicker('cookies', 'Bake cookies !!', 'yummy', '.clickers');
+
+  assert.equal(resourcePool.resources['cookies'].value, 0);
+  c.click();
+  assert.equal(resourcePool.resources['cookies'].value, 1);
+
+  c.display();
+  assert.equal($("#qunit-fixture div.clickers button#cookiesButton").length, 1);
+});
