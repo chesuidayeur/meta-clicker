@@ -45,9 +45,9 @@ var UI = {
   log: function(message) {
     $('div#log').html('Day '+Timer.day+' : '+message+'<br/>'+$('div#log').html());
   },
-  unglitchButtons : function () {
+  unglitchButton : function (btn) {
     // Hack from bwhit from http://stackoverflow.com/questions/3861307
-    $("button, input[type='button'], input[type='submit']").button()
+    $(btn).button()
       .bind('mouseup', function() {
           $(this).blur();     // prevent jquery ui button from remaining in the active state
     });
@@ -55,7 +55,7 @@ var UI = {
 }
 
 $(document).ready(function () {
-  UI.unglitchButtons();
+  //UI.unglitchButtons();
   resourcePool.init();
   games.init();
   distillers.init();

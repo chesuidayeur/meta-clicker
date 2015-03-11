@@ -15,6 +15,7 @@ function Clicker(resource, text, flavor, container) {
   this.display = function() {
     $('<button id="'+this.resource+'Button" class="clicker" resource="'+this.resource+'" title="'+this.flavor+'">'+this.text+'</button>').appendTo(this.container);
     $('button#'+this.resource+'Button').button().click(this.click.bind(this));
+    UI.unglitchButton('button#'+this.resource+'Button');
   }
 };
 

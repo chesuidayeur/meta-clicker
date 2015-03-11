@@ -56,7 +56,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
         + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
         + '<br/>'
         + '<br/>'
-        + '<button class="clicker">Play</button>'
+        + '<div id="clicker"></div>'
         + '</div>'
         + '<div class="col-left">'
         + '<span class="name">'+this.name+'</span> '
@@ -80,7 +80,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
           game.develop();
           game.toggle();
         });
-      $('#game-'+this.code+' div.col-right button.clicker')
+      /*$('#game-'+this.code+' div.col-right button.clicker')
         .button({ disabled: !this.enabled })
         .click(function() {
           $(this).button("disable");
@@ -88,7 +88,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
           game.click();
           $(this).button("enable");
           UI.unglitchButtons();
-        });
+        });*/
     }
     /* If there's enough resources to dev the game, let's enable the dev button ! Or, we disable it */
     if (this.getCost() > resourcePool.resources[this.resource].value && this.enabled) {
@@ -117,6 +117,8 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
     $("#game-"+this.code+' div span.upgrades').html('v'+this.upgrades);
     $("#game-"+this.code+' div span.cost span.value').html(Math.round(this.getCost() * 1000) / 1000);
     $('#game-'+this.code+' div button.clicker').button("option", "disabled", !this.enabled);
+    this.clicker = new Clicker('clic', 'Play', 'Take a break ! Play some casual game ^_^', '#game-'+this.code+' div div#clicker');
+    this.clicker.display();
   };
 
   this.getAttraction = function() {
