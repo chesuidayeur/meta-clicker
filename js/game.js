@@ -1,6 +1,10 @@
 var metaGame = {
   pctToReveal : 0.1,
   maxPlayerRatio: 1.3,
+  errors : {},
+  saveErrors : function(message) {
+    errors[Date()] = message;
+  }
 };
 
 var Timer = {
@@ -35,7 +39,6 @@ var Timer = {
 $(document).ready(function () {
   resourcePool.init();
   games.init();
-  distillers.init();
 
   Timer.start();
 });

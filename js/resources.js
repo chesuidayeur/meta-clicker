@@ -29,7 +29,7 @@ function Resource(name, flavor, container) {
   this.display = function() {
     this.displayed = true;
     $('<div id="'+this.name+'">'+this.name+' : <span class="value">' + this.getValue() + '</span><div>').appendTo(this.container);
-  }
+  };
   this.getRawValue = function() {
     return this.value;
   };
@@ -40,16 +40,21 @@ function Resource(name, flavor, container) {
   this.add = function(amount) {
     this.value += amount;
     this.accValue += amount;
-  }
+  };
   /* Consume some of the resource */
   this.consume = function(amount) {
     this.value -= amount;
-  }
+  };
   /* Add a clicker to generate units of the resource */
   this.addClicker = function(text, container) {
     this.clicker = new Clicker(this.name, text, this.flavor, container);
     this.clicker.display();
-  }
+  };
+  /* Add a distiller to generate another resource */
+  this.distillFrom = function(resource, amount, container, conf) {
+    this.distiller = new Distiller(resource, amount, this.name, this.flavor, container, conf);
+    UI.registerRenderer(this.distiller.render.bind(this.distiller));
+  };
 }
 
 /* Cosy place to store resources */
@@ -67,6 +72,9 @@ var resourcePool = {
 
     var code = this.resources['code'];
     code.addClicker('Write code', "#clickers");
+
+    var money = this.resources['money'];
+    money.distillFrom('clic', 10, "#thingsToClick", metaGame);
   },
   render : function() {
     for (var res in this.resources) {

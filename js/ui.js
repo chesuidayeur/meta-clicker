@@ -11,6 +11,10 @@ var UI = {
   log: function(message) {
     $('div#log').html('Day '+Timer.day+' : '+message+'<br/>'+$('div#log').html());
   },
+  error: function(message) {
+    game.saveErrors(message);
+    $('div#log').html('Day '+Timr.day+' : '+message+'<br/>'+$('div#log').html());
+  },
   unglitchButton : function (btn) {
     // Hack from bwhit from http://stackoverflow.com/questions/3861307
     $(btn).button()
