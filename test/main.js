@@ -1,9 +1,9 @@
-QUnit.test( "hello test", function( assert ) {
+QUnit.test( "Qunit test", function( assert ) {
   assert.ok( 1 == "1", "QUnit works, great!" );
 });
 
 /* Resource testing */
-QUnit.test("Resource testing", function(assert) {
+QUnit.test("Resource tests", function(assert) {
   var res = new Resource('cookies', 'Best developer fuel ever', '.resources');
 
   assert.equal(res.toString(), 'cookies : 0', 'toString() test');
@@ -64,7 +64,7 @@ QUnit.test("Clicker testing", function(assert) {
   assert.equal($("#qunit-fixture div.clickers button#cookiesButton").length, 1, 'Adding to the DOM');
 });
 
-QUnit.test("Distiller testing", function(assert) {
+QUnit.test("Distiller tests", function(assert) {
   metaGame = {
     pctToReveal : 0.1
   };
@@ -137,4 +137,29 @@ QUnit.test("Distiller testing", function(assert) {
   d.render();
 
   assert.equal(d.displayed, true, 'Enough resources to reveal');
+});
+
+QUnit.test("Game tests", function(assert) {
+  metaGame = {
+    pctToReveal : 0.1
+  };
+  /* We override UI namespace */
+  UI = {
+    unglitchButton: function() { console.log('unglitchButton called'); },
+    log: function(m) { console.log(m); },
+    error: function(m) { UI.errors += 1; },
+    errors: 0
+  };
+  /* We need two resources for a distiller : mocks ! */
+  resourcePool.resources['cookies'] = {
+    name: 'cookies',
+    value: 0,
+    flavor: 'yummy',
+    add: function(v) { this.value += v; }
+  };
+
+  var g = new Game('goodGame', 'Very good testing game', 10, 'cookies', 1.2, metaGame);
+
+  assert.equal(g.upgrades, 0, 'No updates yet');
+
 });

@@ -1,4 +1,4 @@
-function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
+function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
   /* Code name of the game (not displayed to the player */
   this.code = code;
   /* Name of the game (displayed to the player) */
@@ -9,6 +9,8 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
   this.resource = resource;
   /* Cost multiplier for the next version of the game */
   this.ratio = ratio;
+  /* App conf */
+  this.conf = conf;
 
   /* Interface related params */
   /* Is the game displayed in the user interface ? */
@@ -24,82 +26,69 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
   /* Intrisics of the game */
   /* How many times the game has been upgraded */
   this.upgrades = 0;
-  /* Players
-   * Template :
-   * { noob: {
-   *     number: 0,
-   *     clicsPerTick: 0.01,
-   *     attractionToUnlock: 42, /* All games will have at least 42 attraction * /
-   *     avgTime: 10, /* Number of ticks * /
-   *     playedTime: 0 /* Number of ticks * /
-   *   },
-   *   casual : { … },
-   *   seasond : { … },
-   *   hardcore : { … },
-   *   nolife : { … }
-   */
-  this.players = new Players(this, playersConf);
+  /* Players */
+  this.players = null;
 
   /* Do you really need a comment here ? */
   this.toString = function() {
     return this.name;
   };
+  this.setPlayers = function(players) {
+    this.players = players;
+  };
   /* Asking the game to display itself */
   this.render = function() {
     /* If the game is not displayed and enough resources : let's reveal it to the player ! */
-    if (!this.displayed && this.getCost() * metaGame.pctToReveal < resourcePool.resources[this.resource].value) {
-      this.displayed = true;
-      $('<div id="game-'+this.code+'" code="'+this.code+'" class="game">'
-        + '<div class="col-right">'
-        + '<button class="dev">dev</button>'
-        + '<br/>'
-        + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
-        + '<br/>'
-        + '<br/>'
-        + '<div id="clicker"></div>'
-        + '</div>'
-        + '<div class="col-left">'
-        + '<span class="name">'+this.name+'</span> '
-        + ' - <span class="upgrades">v'+this.upgrades+'</span>'
-        + ' <br/>'
-        + '</div>'
-        + '<div class="col-left" id="dev">'
-        + '  Max attraction : <span class="max-attraction">'+this.maxAttraction+'</span>'
-        + '  <br/>'
-        + '  Attraction : <span class="attraction">'+this.getAttraction()+'</span>'
-        + '</div>'
-        + '<div class="players col-left" id="players-'+this.code+'">'
-        +   this.players.toHTML()
-        + '</div>'
-        + '</div>').appendTo("#games-container");
-      $('#game-'+this.code+' div.col-right button.dev')
-        .button({ disabled: !this.enabled })
-        .click(function() {
-          $(this).button("disable");
-          var game = games.list[$(this).parent().parent().attr('code')];
-          game.develop();
-          game.toggle();
-        });
-      /*$('#game-'+this.code+' div.col-right button.clicker')
-        .button({ disabled: !this.enabled })
-        .click(function() {
-          $(this).button("disable");
-          var game = games.list[$(this).parent().parent().attr('code')];
-          game.click();
-          $(this).button("enable");
-          UI.unglitchButtons();
-        });*/
+    if (!this.displayed && this.getCost() * this.conf.pctToReveal < resourcePool.resources[this.resource].value) {
+      this.display();
     }
-    /* If there's enough resources to dev the game, let's enable the dev button ! Or, we disable it */
+    /* If there's enough resources to dev the game, let's enable the dev button ! Or disable it */
     if (this.getCost() > resourcePool.resources[this.resource].value && this.enabled) {
-        this.toggle();
+        this.toggleDev();
     }
     if (this.getCost() <= resourcePool.resources[this.resource].value && !this.enabled) {
-      this.toggle();
+      this.toggleDev();
+    }
+  };
+  /* How to display a Game */
+  this.display = function() {
+    this.displayed = true;
+    $('<div id="game-'+this.code+'" code="'+this.code+'" class="game">'
+      + '<div class="col-right">'
+      + '<button class="dev">dev</button>'
+      + '<br/>'
+      + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
+      + '<br/>'
+      + '<br/>'
+      + '<div id="clicker"></div>'
+      + '</div>'
+      + '<div class="col-left">'
+      + '<span class="name">'+this.name+'</span> '
+      + ' - <span class="upgrades">v'+this.upgrades+'</span>'
+      + ' <br/>'
+      + '</div>'
+      + '<div class="col-left" id="dev">'
+      + '  Max attraction : <span class="max-attraction">'+this.maxAttraction+'</span>'
+      + '  <br/>'
+      + '  Attraction : <span class="attraction">'+this.getAttraction()+'</span>'
+      + '</div>'
+      + '<div class="players col-left" id="players-'+this.code+'">'
+      + '</div>'
+      + '</div>').appendTo("#games-container");
+    $('#game-'+this.code+' div.col-right button.dev')
+      .button({ disabled: !this.enabled })
+      .click(function() {
+        $(this).button("disable");
+        var game = games.list[$(this).parent().parent().attr('code')];
+        game.develop();
+        game.toggleDev();
+      });
+    if (this.players != null) {
+      this.players.display();
     }
   };
   /* Utility function to enable or disable the dev button of the game */
-  this.toggle = function() {
+  this.toggleDev = function() {
     this.enabled = !this.enabled;
     $('#game-'+this.code+' div button.dev').button("option", "disabled", !this.enabled);
   };
@@ -117,16 +106,25 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
     $("#game-"+this.code+' div span.upgrades').html('v'+this.upgrades);
     $("#game-"+this.code+' div span.cost span.value').html(Math.round(this.getCost() * 1000) / 1000);
     $('#game-'+this.code+' div button.clicker').button("option", "disabled", !this.enabled);
-    this.clicker = new Clicker('clic', 'Play', 'Take a break ! Play some casual game ^_^', '#game-'+this.code+' div div#clicker');
-    this.clicker.display();
+    if (this.clicker == null) {
+      this.clicker = new Clicker('clic', 'Play', 'Take a break ! Play some casual game ^_^', '#game-'+this.code+' div div#clicker');
+      this.clicker.display();
+    };
   };
 
   this.getAttraction = function() {
-    return this.attraction + this.upgrades + this.players.getAttractionBonus();
+    var attraction = this.attraction + this.upgrades;
+    if (this.players != null) {
+      attraction += this.players.getAttractionBonus();
+    }
+    return attraction;
   }
 
+  /* Callback function controlling what happens in the game */
   this.whateverHappensToMyGame = function() {
+    /* Update of max attraction reached by the game */
     this.maxAttraction = Math.max(this.getAttraction(), this.maxAttraction);
+    /* If the game has been developped, something happen to the players ^_^ */
     if (this.upgrades > 0) {
       this.whateverHappensToMyPlayers();
     }
@@ -134,18 +132,24 @@ function Game(code, name, cost, resource, ratio, baseAttraction, playersConf) {
 
   /* Where the game produce some clicks ! */
   this.production = function() {
-    resourcePool.resources['clic'].add(this.players.getProduction());
+    if (this.players != null) {
+      resourcePool.resources['clic'].add(this.players.getProduction());
+    }
   };
   /* Where some players might stumble upon the game, and, lo!, play it (clicks $_$) */
   this.whateverHappensToMyPlayers = function() {
-    this.players.playersPlay();
+    if (this.players != null) {
+      this.players.playersPlay();
+    }
   };
 
+  /* Where the game updates how it is displayed */
   this.updateUI = function() {
     $('#game-'+this.code+' span.max-attraction').html(this.maxAttraction);
     $('#game-'+this.code+' span.attraction').html(this.getAttraction());
   }
 
+  /* What happens when metaCliker player plays one of his games */
   this.click = function() {
     //resourcePool.resources['clic'].add(this.players.data.seasoned.clicksPerTick);
     resourcePool.resources['clic'].add(1);
@@ -165,68 +169,79 @@ var games = {
   list : {},
   /* Where all the game are intialized */
   init : function() {
-    this.list['protoIncGame'] = new Game(
+    var protoIncGame = new Game(
       'protoIncGame', 'Proto Incremental Game',
       20, 'code',
       1.25, /* Ratio */
       1, /* Base attraction */
-      { noob: {
-          clicksPerTick: 0.001,
-          minAttractionToLvlup: 5,
-          avgTime: 30
-        },
-        casual: {
-          clicksPerTick: 0.005,
-          minAttractionToLvlup: 15,
-          avgTime: 120
-        },
-        seasoned: {
-          clicksPerTick: 0.02,
-          minAttractionToLvlup: 30,
-          avgTime: 1000
-        },
-        hardcore: {
-          clicksPerTick: 0.1,
-          minAttractionToLvlup: 50,
-          avgTime: 5000
-        },
-        nolife: {
-          clicksPerTick: 0.5,
-          minAttractionToLvlup: 1000000,
-          avgTime: 15000
-        }
-      });
-    this.list['doughnutClicker'] = new Game(
+      metaGame
+    );
+    protoIncGame.setPlayers(
+      new Players(
+        protoIncGame,
+        { noob: {
+            clicksPerTick: 0.001,
+            minAttractionToLvlup: 5,
+            avgTime: 30
+          },
+          casual: {
+            clicksPerTick: 0.005,
+            minAttractionToLvlup: 15,
+            avgTime: 120
+          },
+          seasoned: {
+            clicksPerTick: 0.02,
+            minAttractionToLvlup: 30,
+            avgTime: 1000
+          },
+          hardcore: {
+            clicksPerTick: 0.1,
+            minAttractionToLvlup: 50,
+            avgTime: 5000
+          },
+          nolife: {
+            clicksPerTick: 0.5,
+            minAttractionToLvlup: 1000000,
+            avgTime: 15000
+    }}));
+    this.list['protoIncGame'] = protoIncGame;
+
+    var doughnutClicker = new Game(
       'doughnutClicker', 'Doughnut Clicker : get em all doughnuts',
       1000, 'code',
       1.2, /* Ratio */
       1, /* Base attraction */
-      { noob: {
-          clicksPerTick: 0.001,
-          minAttractionToLvlup: 5,
-          avgTime: 50
-        },
-        casual: {
-          clicksPerTick: 0.01,
-          minAttractionToLvlup: 10,
-          avgTime: 750
-        },
-        seasoned: {
-          clicksPerTick: 0.1,
-          minAttractionToLvlup: 20,
-          avgTime: 1000
-        },
-        hardcore: {
-          clicksPerTick: 1,
-          minAttractionToLvlup: 30,
-          avgTime: 5000
-        },
-        nolife: {
-          clicksPerTick: 2,
-          minAttractionToLvlup: 1000000,
-          avgTime: 15000
-        }
-      });
+      metaGame
+    );
+    doughnutClicker.setPlayers(
+      new Players(
+        doughnutClicker,
+        { noob: {
+            clicksPerTick: 0.001,
+            minAttractionToLvlup: 5,
+            avgTime: 50
+          },
+          casual: {
+            clicksPerTick: 0.01,
+            minAttractionToLvlup: 10,
+            avgTime: 750
+          },
+          seasoned: {
+            clicksPerTick: 0.1,
+            minAttractionToLvlup: 20,
+            avgTime: 1000
+          },
+          hardcore: {
+            clicksPerTick: 1,
+            minAttractionToLvlup: 30,
+            avgTime: 5000
+          },
+          nolife: {
+            clicksPerTick: 2,
+            minAttractionToLvlup: 1000000,
+            avgTime: 15000
+    }}));
+    this.list['doughnutClicker'] = doughnutClicker;
 
     UI.registerRenderer(this.render.bind(this));
   },

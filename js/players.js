@@ -1,5 +1,6 @@
 function Players(game, conf) {
   this.game = game;
+  this.displayes = false;
 
   this.data = {
     noob: {
@@ -37,23 +38,28 @@ function Players(game, conf) {
     var spans = [];
     for (var type in this.data) {
       var disabled = 'style="display: none;"';
-      var sep = '';
+      var sep = ' / ';
       if (this.data[type].minAttractionToLvlup <= this.game.attraction) {
         disabled = '';
       }
-      if (type != 'noob') {
-        sep = ' / '
+      if (type == 'noob') {
+        sep = ''
       }
       spans.add('<span class="'+type+'" title="'+type+'s" '+disabled+'>'+sep+this.data[type].list.length+'</span>');
     }
     return 'Players : '+spans.join('');
   };
 
+  this.display = function() {
+    this.displayed = true;
+    $('div#players-'+this.game.code).html(this.toHTML());
+  }
+
   this.updateUI = function() {
     for (var type in this.data) {
-      var sep = '';
-      if (type != 'noob') {
-        sep = ' / '
+      var sep = ' / ';
+      if (type == 'noob') {
+        sep = ''
       }
       var elt = $('#players-'+this.game.code+' span.'+type);
       if ($(elt).css("display") == 'none' && this.data[type].list.length > 0) {
