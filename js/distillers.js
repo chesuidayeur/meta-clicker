@@ -8,11 +8,13 @@ function Clicker(resource, text, flavor, container) {
   this.text = text;
   /* Tip */
   this.flavor = flavor;
+};
+Clicker.prototype = {
   /* What happens when you click. Mainly adding some resource to the pool */
-  this.click = function() {
+  click: function() {
     resourcePool.resources[this.resource].add(1);
-  };
-  this.display = function() {
+  },
+  display: function() {
     $('<button id="'+this.resource+'Button" class="clicker" resource="'+this.resource+'" title="'+this.flavor+'">'+this.text+'</button>').appendTo(this.container);
     $('button#'+this.resource+'Button').button().click(this.click.bind(this));
     UI.unglitchButton('button#'+this.resource+'Button');
@@ -38,9 +40,10 @@ function Distiller(resource, amount, resultResource, flavor, container, conf) {
   this.displayed = false;
   /* Wether the distiller is enabled (clickable) or not */
   this.enabled = false;
-
+};
+Distiller.prototype = {
   /* Mysteries of the distillation */
-  this.distill = function() {
+  distill: function() {
     var res = resourcePool.resources[this.resource];
     if (res.value < this.amount) {
       UI.error('A meta bug occured : you shouldnt be able to distill '+this.resource+' with only '+res.value+' units ('+this.amount+' needed)');
@@ -48,16 +51,14 @@ function Distiller(resource, amount, resultResource, flavor, container, conf) {
       res.add(-this.amount);
       resourcePool.resources[this.resultResource].add(1);
     }
-  };
-
+  },
   /* Utility function to enable or disable the distiller */
-  this.toggle = function() {
+  toggle: function() {
     this.enabled = !this.enabled;
     $("#distill-"+this.resource).button("option", "disabled", !this.enabled);
-  };
-
+  },
   /* Where we ask the distiller to display itself */
-  this.render = function() {
+  render: function() {
     /* If the distiller is not displayed and enough source resource has been collected, let's reveal it to the world */
     if (!this.displayed && this.amount * this.conf.pctToReveal < resourcePool.resources[this.resource].value) {
       this.display();
@@ -69,23 +70,20 @@ function Distiller(resource, amount, resultResource, flavor, container, conf) {
     if (!this.enabled && this.amount <= resourcePool.resources[this.resource].value) {
       this.toggle();
     }
-  };
-
+  },
   /* Displays the distiller */
-  this.display = function() {
+  display: function() {
     this.displayed = true;
     $('<button id="distill-'+this.resource+'" resource="'+this.resource+'">Distill '+this.resource+'</button>').appendTo(this.container);
     $("#distill-"+this.resource)
       .button({ disabled : !this.enabled })
       .attr('title', this.flavor)
       .click(this.click.bind(this));
-  };
-
+  },
   /* What happens when you click the distiller */
-  this.click = function() {
+  click: function() {
     this.toggle();
     this.distill();
-  };
-}
-
+  },
+};
 

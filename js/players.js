@@ -33,8 +33,10 @@ function Players(game, conf) {
       minAttractionToLvlup: conf.nolife.minAttractionToLvlup,
       avgTime: conf.nolife.avgTime, /* Number of ticks */
       playedTime: 0 /* Number of ticks */ }};
+};
 
-  this.toHTML = function() {
+Players.prototype = {
+  toHTML: function() {
     var spans = [];
     for (var type in this.data) {
       var disabled = 'style="display: none;"';
@@ -48,14 +50,14 @@ function Players(game, conf) {
       spans.add('<span class="'+type+'" title="'+type+'s" '+disabled+'>'+sep+this.data[type].list.length+'</span>');
     }
     return 'Players : '+spans.join('');
-  };
-
-  this.display = function() {
+  },
+  
+  display: function() {
     this.displayed = true;
     $('div#players-'+this.game.code).html(this.toHTML());
-  }
+  },
 
-  this.updateUI = function() {
+  updateUI: function() {
     for (var type in this.data) {
       var sep = ' / ';
       if (type == 'noob') {
@@ -67,9 +69,9 @@ function Players(game, conf) {
       }
       $(elt).html(sep+this.data[type].list.length);
     }
-  };
+  },
 
-  this.getProduction = function() {
+  getProduction: function() {
     var prod = 0;
 
     for (var type in this.data) {
@@ -81,9 +83,9 @@ function Players(game, conf) {
     }
 
     return prod;
-  };
+  },
 
-  this.newPlayers = function() {
+  newPlayers: function() {
     var newPlayers = 0;
     var rand = Math.random();
     // 10% probability plus epsilon depending on game attraction
@@ -92,9 +94,9 @@ function Players(game, conf) {
       newPlayers = Math.ceil(Math.log10(this.game.getAttraction()));
     }
     return newPlayers;
-  };
+  },
 
-  this.playersPlay = function() {
+  playersPlay: function() {
     var newPlayers = this.newPlayers();
     for (var type in this.data) {
       var player = this.data[type];
@@ -141,17 +143,17 @@ function Players(game, conf) {
     }
     
     this.updateUI();
-  };
+  },
 
-  this.getAttractionBonus = function() {
+  getAttractionBonus: function() {
     var bonus = 0;
     for (var type in this.data) {
       bonus += this.data[type].list.length;
     }
     return bonus * 0.01;
-  };
+  },
 
-  this.getLeavingThresholdBonus = function() {
+  getLeavingThresholdBonus: function() {
     return this.game.getAttraction();
-  }
-}
+  },
+};

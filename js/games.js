@@ -28,16 +28,18 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
   this.upgrades = 0;
   /* Players */
   this.players = null;
+}
 
+Game.prototype = {
   /* Do you really need a comment here ? */
-  this.toString = function() {
+  toString: function() {
     return this.name;
-  };
-  this.setPlayers = function(players) {
+  },
+  setPlayers: function(players) {
     this.players = players;
-  };
+  },
   /* Asking the game to display itself */
-  this.render = function() {
+  render: function() {
     /* If the game is not displayed and enough resources : let's reveal it to the player ! */
     if (!this.displayed && this.getCost() * this.conf.pctToReveal < resourcePool.resources[this.resource].value) {
       this.display();
@@ -49,9 +51,9 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
     if (this.getCost() <= resourcePool.resources[this.resource].value && !this.enabled) {
       this.toggleDev();
     }
-  };
+  },
   /* How to display a Game */
-  this.display = function() {
+  display: function() {
     this.displayed = true;
     $('<div id="game-'+this.code+'" code="'+this.code+'" class="game">'
       + '<div class="col-right">'
@@ -86,18 +88,18 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
     if (this.players != null) {
       this.players.display();
     }
-  };
+  },
   /* Utility function to enable or disable the dev button of the game */
-  this.toggleDev = function() {
+  toggleDev: function() {
     this.enabled = !this.enabled;
     $('#game-'+this.code+' div button.dev').button("option", "disabled", !this.enabled);
-  };
+  },
   /* Utility function to get the price of the game */
-  this.getCost = function() {
+  getCost: function() {
     return Math.round(this.cost * Math.pow(this.ratio, this.upgrades) * 1000) / 1000;
-  };
+  },
   /* Business ! How to develop a game */
-  this.develop = function() {
+  develop: function() {
     var amount = this.getCost();
     var res = resourcePool.resources[this.resource];
     var value = res.value;
@@ -110,51 +112,47 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
       this.clicker = new Clicker('clic', 'Play', 'Take a break ! Play some casual game ^_^', '#game-'+this.code+' div div#clicker');
       this.clicker.display();
     };
-  };
+  },
 
-  this.getAttraction = function() {
+  getAttraction: function() {
     var attraction = this.attraction + this.upgrades;
     if (this.players != null) {
       attraction += this.players.getAttractionBonus();
     }
     return attraction;
-  }
-
+  },
   /* Callback function controlling what happens in the game */
-  this.whateverHappensToMyGame = function() {
+  whateverHappensToMyGame: function() {
     /* Update of max attraction reached by the game */
     this.maxAttraction = Math.max(this.getAttraction(), this.maxAttraction);
     /* If the game has been developped, something happen to the players ^_^ */
     if (this.upgrades > 0) {
       this.whateverHappensToMyPlayers();
     }
-  }
-
+  },
   /* Where the game produce some clicks ! */
-  this.production = function() {
+  production: function() {
     if (this.players != null) {
       resourcePool.resources['clic'].add(this.players.getProduction());
     }
-  };
+  },
   /* Where some players might stumble upon the game, and, lo!, play it (clicks $_$) */
-  this.whateverHappensToMyPlayers = function() {
+  whateverHappensToMyPlayers: function() {
     if (this.players != null) {
       this.players.playersPlay();
     }
-  };
-
+  },
   /* Where the game updates how it is displayed */
-  this.updateUI = function() {
+  updateUI: function() {
     $('#game-'+this.code+' span.max-attraction').html(this.maxAttraction);
     $('#game-'+this.code+' span.attraction').html(this.getAttraction());
-  }
-
+  },
   /* What happens when metaCliker player plays one of his games */
-  this.click = function() {
+  click: function() {
     //resourcePool.resources['clic'].add(this.players.data.seasoned.clicksPerTick);
     resourcePool.resources['clic'].add(1);
-  }
-}
+  },
+};
 
 /* Wrapper for all the games */
 var games = {
