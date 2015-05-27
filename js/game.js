@@ -39,6 +39,7 @@ var Timer = {
 $(document).ready(function () {
   resourcePool.init();
   games.init();
+  devs.init();
 
   Timer.start();
 });
