@@ -9,7 +9,7 @@ h1 {
   text-align: right;
 }
 
-div.game {
+div.dev, div.game {
   border: 1px solid #aaa;
   padding: 3px;
   border-radius: 5px;
