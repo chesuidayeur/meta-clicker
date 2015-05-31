@@ -21,6 +21,7 @@ var Timer = {
       Timer.day++;
       $("span#days").html(Timer.day);
       games.update();
+      devs.production();
       Timer.dayCounter = 0;
     }
     games.production();

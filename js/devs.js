@@ -1,60 +1,70 @@
-function Dev(dev, container) {
-  this.id = dev.id;
-  this.name = dev.name;
-  this.flavor = dev.desc;
+function Dev(id, name, desc) {
+  this.id = id;
+  this.name = name;
+  this.flavor = desc;
 
-  this.container = container;
+  this.container = null;
 
   this.displayed = false;
   this.enabled = false;
+
+  this.hired = false;
+  this.salary = 0.1;
+  this.productivity = 0.01;
 }
 Dev.prototype = {
-  build: function() {
-    $('<div id="dev-'+this.id+'" class="dev"><label>'+this.name+'</label><br/>'+this.flavor+'</div>').appendTo(this.container);
+  hire: function(container) {
+    this.container = container;
+    this.hired = true;
+    $('<div id="dev-'+this.id+'" class="dev"><label>'+this.name+'</label><br/>'+this.flavor+'</div>').appendTo(container);
+  },
+  leave: function() {
+    this.hired = false;
+    $('#dev-'+this.id).remove();
+    UI.log(this.name + " left your team. Beware, devs won't work for free !");
   },
   render: function() {
+  },
+  production: function() {
+    var money = resourcePool.resources['money'].value;
+    if (money >= this.salary) {
+      resourcePool.resources['money'].add(-this.salary);
+      resourcePool.resources['code'].add(this.productivity);
+    } else {
+      this.leave();
+    }
+  },
+  lifeOfDev: function() {
+    this.production();
   }
 }
 
 var devs = {
-  pool: [
-    { id: 'touring',  name: 'Alan Touring', desc: 'The wandering hacker, first of his order', hired: false },
-    { id: 'hackerman',  name: 'Hackerman', decc: 'Spawn of the 80s, he likes to hack', hired: false },
-    { id: 'jeeve',  name: 'Jeeve Stop', desc: 'Master of design, he works a lot, really, never ever stops !', hired: false },
-    { id: 'john',  name: 'John Stallman', desc: 'Never shows his code, his brother is a bit more famous', hired: false },
-    { id: 'knoos',  name: 'Knoos', desc: "Good with ideas, writes books, for some reason doesn't answer emails", hired: false },
-    { id: 'door',  name: 'William Doors', desc: 'Good at making money with computer, bad taste for glasses though', hired: false },
-    { id: 'neo',  name: 'Thomas Anderson', desc: "Rumoured to hack the very fabric of the universe, doing so with kung fu, he's a bit dangerous to have around", hired: false },
-    { id: 'knot',  name: "Mark 'Knot' Nobody", desc: 'Always seen with a pickaxe, can he code with it ?', hired: false }
-  ],
+  list: [],
   getAvailableDev: function() {
-    var availableDevs = devs.pool.findAll(function(e) { return !e.hired });
+    var availableDevs = devs.list.findAll(function(e) { return !e.hired });
+    console.log(availableDevs);
     var i = Math.ceil(Math.random()*availableDevs.length);
-    var j = devs.pool.findIndex(function(e) { return (e.id == availableDevs[i].id) });
-    devs.pool[j].hired = true;
-    return devs.pool[j];
-  },
-  list: {},
-  sequence: 0,
-  getId: function() {
-    var id = devs.sequence;
-    devs.sequence++;
-    return id;
+    console.log(i);
+    var j = devs.list.findIndex(function(e) { return (e.id == availableDevs[i].id) });
+    console.log(j);
+    return devs.list[j];
   },
   hireDev: function() {
     var money = resourcePool.resources['money'];
     money.add(-1);
-    var dev = new Dev(devs.getAvailableDev(), "#devs-container");
-    dev.build();
-    devs.list[dev.id] = dev;
+    var dev = devs.getAvailableDev();
+    dev.hire("#devs-container");
   },
   isHireDevBtnEnabled: function() {
     var money = resourcePool.resources['money'].value;
     return (money >= 1);
   },
+  production: function() {
+    for (d in devs.list) { if (devs.list[d].hired) { devs.list[d].production(); } }
+  },
 
   init: function() {
-    //UI.registerRenderer(devs.renderHireDevBtn);
     devs.hireDevBtn = new MetaButton(
         'hire-button',
         'Hire Dev',
@@ -66,5 +76,14 @@ var devs = {
         devs.isHireDevBtnEnabled);
 
     UI.registerRenderer(devs.hireDevBtn.render.bind(devs.hireDevBtn));
+
+    devs.list.add(new Dev('touring', 'Alan Touring', 'The wandering hacker, first of his order'));
+    devs.list.add(new Dev('hackerman', 'Hackerman', 'Spawn of the 80s, can he really hack time ?'));
+    devs.list.add(new Dev('jeeve', 'Jeeve Stop', 'Master of design, he works a lot, really, never ever stops !'));
+    devs.list.add(new Dev('john', 'John Stallman', 'Never shows his code, his brother is a bit more famous'));
+    devs.list.add(new Dev('knoos', 'Knoos', "Good with ideas, writes books, for some reason doesn't answer emails"));
+    devs.list.add(new Dev('door', 'William Doors', 'Good at making money with computer, bad taste for glasses though'));
+    devs.list.add(new Dev('neo', 'Thomas Anderson', "Rumoured to hack the very fabric of the universe; doing so with kung fu, he's a bit dangerous to have around"));
+    devs.list.add(new Dev('knot', "Mark 'Knot' Nobody", 'Always seen with a pickaxe, can he code with this ?'));
   }
 };
