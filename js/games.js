@@ -5,7 +5,7 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
   this.name = name;
   /* Base cost of the game */
   this.majorReleaseCost = { resource: 'code', amount: cost, ratio: ratio };
-  this.minorReleaseCost = { resource: 'code', amount: cost * 0.1, ratio: ratio };
+  this.minorReleaseCost = { resource: 'code', amount: cost * 0.1, ratio: 1 + ratio * 0.33 };
   /* Resource used to dev the game */
   this.resource = resource;
   /* Cost multiplier for the next version of the game */
@@ -129,14 +129,14 @@ Game.prototype = {
   getMajorReleaseCost: function() {
     return Math.round(
         (this.majorReleaseCost.amount + (this.totalMinorVersions - this.minorVersions))
-        * Math.pow(this.ratio, this.majorVersions + this.minorVersions * 0.1) * 1000
+        * Math.pow(this.majorReleaseCost.ratio, this.majorVersions + this.minorVersions * 0.1) * 1000
     ) / 1000;
   },
   getMinorReleaseCost: function() {
     return Math.round(
         (this.previousMajorReleaseCost * 0.33 +
          (this.minorReleaseCost.amount
-         * Math.pow(this.ratio, this.minorVersions))) * 1000
+         * Math.pow(this.minorReleaseCost.ratio, this.minorVersions))) * 1000
     ) / 1000;
   },
   /* Business ! How to develop a game */
