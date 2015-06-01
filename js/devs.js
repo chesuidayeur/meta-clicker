@@ -16,6 +16,7 @@ Dev.prototype = {
   hire: function(container) {
     this.container = container;
     this.hired = true;
+    resourcePool.resources['dev'].add(1);
     $('<div id="dev-'+this.id+'" class="dev"><label>'+this.name+'</label><br/>'+this.flavor+'</div>').appendTo(container);
   },
   leave: function() {
@@ -40,6 +41,7 @@ Dev.prototype = {
 }
 
 var devs = {
+  price: { resource: 'money', amount: 10, ratio: 5 },
   list: [],
   getAvailableDev: function() {
     var availableDevs = devs.list.findAll(function(e) { return !e.hired });
@@ -50,15 +52,19 @@ var devs = {
     console.log(j);
     return devs.list[j];
   },
+  getCost: function() {
+    return Math.round(devs.price.amount * Math.pow(devs.price.ratio, resourcePool.resources['dev'].value) * 1000) / 1000;
+  },
   hireDev: function() {
     var money = resourcePool.resources['money'];
-    money.add(-1);
+    var cost = devs.getCost();
+    money.add(-cost);
     var dev = devs.getAvailableDev();
     dev.hire("#devs-container");
   },
   isHireDevBtnEnabled: function() {
     var money = resourcePool.resources['money'].value;
-    return (money >= 1);
+    return (money >= devs.getCost());
   },
   production: function() {
     for (d in devs.list) { if (devs.list[d].hired) { devs.list[d].production(); } }
@@ -69,8 +75,8 @@ var devs = {
         'hire-button',
         'Hire Dev',
         "Why work yourself when someone else can do it for you ?",
-        'money',
-        1,
+        devs.price.resource,
+        Math.round(devs.price.amount * 0.1),
         '#thingsToClick',
         devs.hireDev,
         devs.isHireDevBtnEnabled);

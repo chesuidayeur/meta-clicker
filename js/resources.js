@@ -76,7 +76,7 @@ var resourcePool = {
     code.addClicker('Write code', "#clickers");
 
     var money = this.resources['money'];
-    money.distillFrom('clic', 10, "#thingsToClick", metaGame);
+    money.distillFrom('clic', 100, "#thingsToClick", metaGame);
   },
   render : function() {
     for (var res in this.resources) {
