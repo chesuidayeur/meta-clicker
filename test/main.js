@@ -160,6 +160,7 @@ QUnit.test("Game tests", function(assert) {
 
   var g = new Game('goodGame', 'Very good testing game', 10, 'cookies', 1.2, metaGame);
 
-  assert.equal(g.upgrades, 0, 'No updates yet');
+  assert.equal(g.majorVersions, 0, 'No major releases yet');
+  assert.equal(g.minorVersions, 0, 'No minor releases yet');
 
 });

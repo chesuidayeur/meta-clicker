@@ -14,7 +14,7 @@ div.dev, div.game {
   padding: 3px;
   border-radius: 5px;
   display: block;
-  width: 300px;
+  width: 320px;
   overflow: hidden;
   margin-top: 5px;
 }
@@ -29,7 +29,7 @@ div.col-right {
 }
 
 div.game div.col-right {
-  width: 33%;
+  width: 38%;
 }
 
 div#log {

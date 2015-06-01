@@ -41,7 +41,7 @@ Dev.prototype = {
 }
 
 var devs = {
-  price: { resource: 'money', amount: 10, ratio: 5 },
+  price: { resource: 'money', amount: 100, ratio: 5 },
   list: [],
   getAvailableDev: function() {
     var availableDevs = devs.list.findAll(function(e) { return !e.hired });

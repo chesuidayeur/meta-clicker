@@ -133,13 +133,14 @@ Players.prototype = {
           player.list = remainingPlayers;
         }
       }
-  
+
       /* New players ! */
       while (newPlayers > 0) {
         player.list.push(1);
         newPlayers--;
       }
       newPlayers = lvlups;
+      lvlups = 0;
     }
     
     this.updateUI();

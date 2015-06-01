@@ -4,7 +4,8 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
   /* Name of the game (displayed to the player) */
   this.name = name;
   /* Base cost of the game */
-  this.cost = cost;
+  this.majorReleaseCost = { resource: 'code', amount: cost, ratio: ratio };
+  this.minorReleaseCost = { resource: 'code', amount: cost * 0.1, ratio: ratio };
   /* Resource used to dev the game */
   this.resource = resource;
   /* Cost multiplier for the next version of the game */
@@ -16,7 +17,8 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
   /* Is the game displayed in the user interface ? */
   this.displayed = false;
   /* Is the game clickable ? */
-  this.enabled = false;
+  this.majorReleaseEnabled = false;
+  this.minorReleaseEnabled = false;
 
   /* Attraction related */
   this.baseAttraction = baseAttraction;
@@ -25,7 +27,11 @@ function Game(code, name, cost, resource, ratio, baseAttraction, conf) {
 
   /* Intrisics of the game */
   /* How many times the game has been upgraded */
-  this.upgrades = 0;
+  this.majorVersions = 0;
+  this.minorVersions = 0;
+  this.totalMinorVersions = 0;
+  this.hotfixes = 0;
+  this.previousMajorReleaseCost = 0;
   /* Players */
   this.players = null;
 }
@@ -41,15 +47,21 @@ Game.prototype = {
   /* Asking the game to display itself */
   render: function() {
     /* If the game is not displayed and enough resources : let's reveal it to the player ! */
-    if (!this.displayed && this.getCost() * this.conf.pctToReveal < resourcePool.resources[this.resource].value) {
+    if (!this.displayed && this.getMajorReleaseCost() * this.conf.pctToReveal < resourcePool.resources[this.resource].value) {
       this.display();
     }
-    /* If there's enough resources to dev the game, let's enable the dev button ! Or disable it */
-    if (this.getCost() > resourcePool.resources[this.resource].value && this.enabled) {
-        this.toggleDev();
+    /* If there's enough resources for a new release, time to enable the appropriate button */
+    if (this.getMajorReleaseCost() > resourcePool.resources[this.majorReleaseCost.resource].value && this.majorReleaseEnabled) {
+        this.toggleMajorRelease();
     }
-    if (this.getCost() <= resourcePool.resources[this.resource].value && !this.enabled) {
-      this.toggleDev();
+    if (this.getMajorReleaseCost() <= resourcePool.resources[this.majorReleaseCost.resource].value && !this.majorReleaseEnabled) {
+      this.toggleMajorRelease();
+    }
+    if (this.getMinorReleaseCost() > resourcePool.resources[this.minorReleaseCost.resource].value && this.minorReleaseEnabled) {
+        this.toggleMinorRelease();
+    }
+    if (this.getMinorReleaseCost() <= resourcePool.resources[this.minorReleaseCost.resource].value && !this.minorReleaseEnabled) {
+      this.toggleMinorRelease();
     }
   },
   /* How to display a Game */
@@ -57,16 +69,20 @@ Game.prototype = {
     this.displayed = true;
     $('<div id="game-'+this.code+'" code="'+this.code+'" class="game">'
       + '<div class="col-right">'
-      + '<button class="dev">dev</button>'
+      + '<button class="major-release">Major Release</button>'
       + '<br/>'
-      + '<span class="cost">(<span class="value">'+this.getCost()+'</span> '+this.resource+')</span>'
+      + '<span class="major-cost">(<span class="value">'+this.getMajorReleaseCost()+'</span> '+this.resource+')</span>'
+      + '<br/>'
+      + '<button class="minor-release">Minor Release</button>'
+      + '<br/>'
+      + '<span class="minor-cost">(<span class="value">'+this.getMinorReleaseCost()+'</span> '+this.resource+')</span>'
       + '<br/>'
       + '<br/>'
       + '<div id="clicker"></div>'
       + '</div>'
       + '<div class="col-left">'
       + '<span class="name">'+this.name+'</span> '
-      + ' - <span class="upgrades">v'+this.upgrades+'</span>'
+      + ' - <span class="upgrades">v'+this.majorVersions+'.'+this.minorVersions+'.'+this.hotfixes+'</span>'
       + ' <br/>'
       + '</div>'
       + '<div class="col-left" id="dev">'
@@ -77,37 +93,81 @@ Game.prototype = {
       + '<div class="players col-left" id="players-'+this.code+'">'
       + '</div>'
       + '</div>').appendTo("#games-container");
-    $('#game-'+this.code+' div.col-right button.dev')
-      .button({ disabled: !this.enabled })
-      .click(function() {
-        $(this).button("disable");
-        var game = games.list[$(this).parent().parent().attr('code')];
-        game.develop();
-        game.toggleDev();
-      });
+    $('#game-'+this.code+' div.col-right button.major-release')
+      .button({ disabled: !this.majorReleaseEnabled })
+      .click(this.majorRelease);
+    $('#game-'+this.code+' div.col-right button.minor-release')
+      .button({ disabled: !this.minorReleaseEnabled })
+      .click(this.minorRelease);
     if (this.players != null) {
       this.players.display();
     }
   },
+  majorRelease: function() {
+    $(this).button("disable");
+    var game = games.list[$(this).parent().parent().attr('code')];
+    game.developMajorRelease();
+    game.toggleMajorRelease();
+  },
+  minorRelease: function() {
+    $(this).button("disable");
+    var game = games.list[$(this).parent().parent().attr('code')];
+    game.developMinorRelease();
+    game.toggleMinorRelease();
+  },
   /* Utility function to enable or disable the dev button of the game */
-  toggleDev: function() {
-    this.enabled = !this.enabled;
-    $('#game-'+this.code+' div button.dev').button("option", "disabled", !this.enabled);
+  toggleMajorRelease: function() {
+    this.majorReleaseEnabled = !this.majorReleaseEnabled;
+    $('#game-'+this.code+' div button.major-release').button("option", "disabled", !this.majorReleaseEnabled);
+  },
+  /* Utility function to enable or disable the dev button of the game */
+  toggleMinorRelease: function() {
+    this.minorReleaseEnabled = !this.minorReleaseEnabled;
+    $('#game-'+this.code+' div button.minor-release').button("option", "disabled", !this.minorReleaseEnabled);
   },
   /* Utility function to get the price of the game */
-  getCost: function() {
-    return Math.round(this.cost * Math.pow(this.ratio, this.upgrades) * 1000) / 1000;
+  getMajorReleaseCost: function() {
+    return Math.round(
+        (this.majorReleaseCost.amount + (this.totalMinorVersions - this.minorVersions))
+        * Math.pow(this.ratio, this.majorVersions + this.minorVersions * 0.1) * 1000
+    ) / 1000;
+  },
+  getMinorReleaseCost: function() {
+    return Math.round(
+        (this.previousMajorReleaseCost * 0.33 +
+         (this.minorReleaseCost.amount
+         * Math.pow(this.ratio, this.minorVersions))) * 1000
+    ) / 1000;
   },
   /* Business ! How to develop a game */
-  develop: function() {
-    var amount = this.getCost();
+  developMajorRelease: function() {
+    var amount = this.getMajorReleaseCost();
+    this.previousMajorReleaseCost = amount;
     var res = resourcePool.resources[this.resource];
     var value = res.value;
-    this.upgrades += 1;
+    this.majorVersions += 1;
+    this.minorVersions = 0;
     res.consume(amount);
-    $("#game-"+this.code+' div span.upgrades').html('v'+this.upgrades);
-    $("#game-"+this.code+' div span.cost span.value').html(Math.round(this.getCost() * 1000) / 1000);
-    $('#game-'+this.code+' div button.clicker').button("option", "disabled", !this.enabled);
+    $("#game-"+this.code+' div span.upgrades').html('v'+this.majorVersions+'.'+this.minorVersions+'.'+this.hotfixes);
+    $("#game-"+this.code+' div span.major-cost span.value').html(Math.round(this.getMajorReleaseCost() * 1000) / 1000);
+    $("#game-"+this.code+' div span.minor-cost span.value').html(Math.round(this.getMinorReleaseCost() * 1000) / 1000);
+    $('#game-'+this.code+' div button.clicker').button("option", "disabled", !this.majorReleaseEnabled);
+    if (this.clicker == null) {
+      this.clicker = new Clicker('clic', 'Play', 'Take a break ! Play some casual game ^_^', '#game-'+this.code+' div div#clicker');
+      this.clicker.display();
+    };
+  },
+  developMinorRelease: function() {
+    var amount = this.getMinorReleaseCost();
+    var res = resourcePool.resources[this.resource];
+    var value = res.value;
+    this.minorVersions += 1;
+    this.totalMinorVersions += 1;
+    res.consume(amount);
+    $("#game-"+this.code+' div span.upgrades').html('v'+this.majorVersions+'.'+this.minorVersions+'.'+this.hotfixes);
+    $("#game-"+this.code+' div span.major-cost span.value').html(Math.round(this.getMajorReleaseCost() * 1000) / 1000);
+    $("#game-"+this.code+' div span.minor-cost span.value').html(Math.round(this.getMinorReleaseCost() * 1000) / 1000);
+    $('#game-'+this.code+' div button.clicker').button("option", "disabled", !this.minorReleaseEnabled);
     if (this.clicker == null) {
       this.clicker = new Clicker('clic', 'Play', 'Take a break ! Play some casual game ^_^', '#game-'+this.code+' div div#clicker');
       this.clicker.display();
@@ -115,7 +175,7 @@ Game.prototype = {
   },
 
   getAttraction: function() {
-    var attraction = this.attraction + this.upgrades;
+    var attraction = this.attraction + this.majorVersions * 10 + this.minorVersions;
     if (this.players != null) {
       attraction += this.players.getAttractionBonus();
     }
@@ -126,7 +186,7 @@ Game.prototype = {
     /* Update of max attraction reached by the game */
     this.maxAttraction = Math.max(this.getAttraction(), this.maxAttraction);
     /* If the game has been developped, something happen to the players ^_^ */
-    if (this.upgrades > 0) {
+    if (this.majorVersions > 0 || this.minorVersions > 0) {
       this.whateverHappensToMyPlayers();
     }
   },
@@ -169,8 +229,8 @@ var games = {
   init : function() {
     var protoIncGame = new Game(
       'protoIncGame', 'Proto Incremental Game',
-      20, 'code',
-      1.25, /* Ratio */
+      200, 'code',
+      2, /* Ratio */
       1, /* Base attraction */
       metaGame
     );
@@ -179,28 +239,28 @@ var games = {
         protoIncGame,
         { noob: {
             clicksPerTick: 0.001,
-            minAttractionToLvlup: 5,
-            avgTime: 30
+            minAttractionToLvlup: 15,
+            avgTime: 20
           },
           casual: {
             clicksPerTick: 0.005,
-            minAttractionToLvlup: 15,
-            avgTime: 120
+            minAttractionToLvlup: 30,
+            avgTime: 30
           },
           seasoned: {
             clicksPerTick: 0.02,
-            minAttractionToLvlup: 30,
-            avgTime: 1000
+            minAttractionToLvlup: 60,
+            avgTime: 45
           },
           hardcore: {
             clicksPerTick: 0.1,
-            minAttractionToLvlup: 50,
-            avgTime: 5000
+            minAttractionToLvlup: 120,
+            avgTime: 60
           },
           nolife: {
             clicksPerTick: 0.5,
             minAttractionToLvlup: 1000000,
-            avgTime: 15000
+            avgTime: 100
     }}));
     this.list['protoIncGame'] = protoIncGame;
 
